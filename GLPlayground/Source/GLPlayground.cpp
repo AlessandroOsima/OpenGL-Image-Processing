@@ -10,6 +10,8 @@
 #include <iostream>
 #include <strstream>
 #include "Logger.h"
+#include "ResourceManager.h"
+#include "Texture.h"
 
 
 struct WindowInfo
@@ -61,26 +63,27 @@ int main()
 
 	ShaderProgram prg;
 
-	if (!prg.CompileShader("Shaders/base.vs", ShaderType::Vertex))
+	//FIXME : Generating a string for each resource load is TERRIBLE
+	std::string vsStr = ResourceManager::GetShadersForlder();
+
+	if (!prg.CompileShader(vsStr += "base.vs", ShaderType::Vertex))
 	{
 		Logger::GetLogger().LogString("Vertex shader compile failed", ERROR);
 	}
+	std::string fsStr = ResourceManager::GetShadersForlder();
 
-	if (!prg.CompileShader("Shaders/base.fs", ShaderType::Fragment))
+	if (!prg.CompileShader(fsStr += "base.fs", ShaderType::Fragment))
 	{
 		Logger::GetLogger().LogString("Fragment shader compile failed", ERROR);
 	}
 
 	prg.LinkProgram();
 
-	/*
-		{ 1.f, 1.f, 0.0f },
-		{ 1.f,  -1.f, 0.0f },
-		{ -1.f,   1.f, 0.0f },
-		{ -1.f, 1.f, 0.0f },
-		{ 1.0f,  -1.f, 0.0f },
-		{ -1.f,   -1.f, 0.0f }
-	*/
+	Texture texture;
+
+	std::string txStr = ResourceManager::GetTexturesFolder();
+	texture.LoadFromFile(txStr += "test.jpg");
+	//
 
 	Mesh mesh(
 	{  //Vertices
