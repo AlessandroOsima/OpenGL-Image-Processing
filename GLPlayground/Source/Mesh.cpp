@@ -1,4 +1,5 @@
 #include "Mesh.h"
+#include <stb_image.h>
 
 
 Mesh::Mesh(const std::vector<Vertex> & Vertices, const std::vector<Index> & Indices)

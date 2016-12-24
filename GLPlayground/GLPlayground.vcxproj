@@ -28,6 +28,7 @@
     <ClCompile Include="Source\stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Libs\stb\stb_image.h" />
     <ClInclude Include="Source\GLRenderer.h" />
     <ClInclude Include="Source\Logger.h" />
     <ClInclude Include="Source\MathTypes.h" />
@@ -124,7 +125,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)\Libs\glm;$(ProjectDir)\Source;$(ProjectDir)\Libs\glew-2.0.0\include;$(ProjectDir)\Libs\glfw-3.2.1.bin.WIN64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\Libs\stb;$(ProjectDir)\Libs\glm;$(ProjectDir)\Source;$(ProjectDir)\Libs\glew-2.0.0\include;$(ProjectDir)\Libs\glfw-3.2.1.bin.WIN64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
