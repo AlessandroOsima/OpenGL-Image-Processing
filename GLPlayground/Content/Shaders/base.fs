@@ -10,6 +10,4 @@ void main()
 {
    vec4 diffuseColor = vec4(texture(diffuseSampler, uvCoords).xyz, 1);
    color = diffuseColor;
-   //color = vec4(uvCoords,0,0);
-   //color = vec4(1,0,0,0);
 }
