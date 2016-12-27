@@ -29,6 +29,9 @@ public:
 		return Info;
 	}
 
+	void Bind();
+	void UnBind();
+
 	~Texture();
 
 private:

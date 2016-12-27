@@ -61,6 +61,7 @@ int main()
 		return -1;
 	}
 
+	//DUMMY MESH LOADING -- NEEDS SCENE CLASS
 	ShaderProgram prg;
 
 	//FIXME : Generating a string for each resource load is TERRIBLE
@@ -86,11 +87,11 @@ int main()
 	//
 
 	Mesh mesh(
-	{  //Vertices
-		{glm::vec3(1.f, 1.f, 0.0f), glm::vec4(0, 0, 1, 1) }, //0
-		{glm::vec3(1.f,  -1.f, 0.0f), glm::vec4(0, 1, 0, 1) },  //1
-		{glm::vec3(-1.f, 1.f, 0.0f), glm::vec4(1, 0, 0, 1) }, //2
-		{glm::vec3(-1.f,   -1.f, 0.0f), glm::vec4(0, 0, 1, 1)}  //3
+	  {  //Vertices
+		{glm::vec3(1.f, 1.f, 0.0f), glm::vec4(0, 0, 1, 1), glm::vec2(1,0) }, //0
+		{glm::vec3(1.f,  -1.f, 0.0f), glm::vec4(0, 1, 0, 1), glm::vec2(1,1) },  //1
+		{glm::vec3(-1.f, 1.f, 0.0f), glm::vec4(1, 0, 0, 1), glm::vec2(0,0) }, //2
+		{glm::vec3(-1.f,   -1.f, 0.0f), glm::vec4(0, 0, 1, 1), glm::vec2(0,1) }  //3
 	  },
 	     //Indices
 	  {
@@ -100,17 +101,19 @@ int main()
 		2,
 		1,
 		3
-	  }
-	);
+	  },
 
+	  { &texture, &prg }
+	);
+	//
+
+	prg.UseProgram();
 
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
 
 		renderer.Clear();
-
-		prg.UseProgram();
 
 		mesh.BindMesh();
 		renderer.DrawMesh(mesh);

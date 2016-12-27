@@ -31,6 +31,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Libs\stb\stb_image.h" />
+    <ClInclude Include="Source\GLUtilities.h" />
     <ClInclude Include="Source\ResourceManager.h" />
     <ClInclude Include="Source\GLRenderer.h" />
     <ClInclude Include="Source\Logger.h" />
