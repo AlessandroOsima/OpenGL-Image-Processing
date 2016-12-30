@@ -1,13 +1,9 @@
 #include "Mesh.h"
+#include "ShaderManager.h"
 
 
-
-Mesh::Mesh(const std::vector<Vertex> & Vertices, const std::vector<Index> & Indices,const Material & MaterialToUse)
+Mesh::Mesh(const std::vector<Vertex> & Vertices, const std::vector<Index> & Indices, Material && MaterialToUse) : Vertices(Vertices), Indices(Indices), CurrentMaterial(std::move(MaterialToUse))
 {
-	this->Vertices = Vertices;
-	this->Indices = Indices;
-	this->CurrentMaterial = MaterialToUse;
-
 	GenerateMeshData();
 }
 
@@ -54,6 +50,10 @@ void Mesh::GenerateMeshData()
 	{
 		glCreateSamplers(1, &DiffuseSampler);
 	}
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	
 }
 
 void Mesh::BindMesh()
@@ -64,6 +64,8 @@ void Mesh::BindMesh()
 	{
 		CurrentMaterial.DiffuseTexture->Bind();
 		glBindSampler(0, DiffuseSampler);
+
+		ShaderManager::GetShaderManager().UseProgram(CurrentMaterial.Program);
 	}
 }
 

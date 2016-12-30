@@ -42,7 +42,6 @@ bool Texture::LoadFromFile(const std::string & ImageFile)
 
 void Texture::Bind()
 {
-	//glBindTexture(GL_TEXTURE_2D, ID);
 	glBindTextureUnit(0, ID);
 }
 

@@ -11,11 +11,35 @@ ShaderProgram::ShaderProgram()
 }
 
 
+ShaderProgram::ShaderProgram(ShaderProgram && Program) : 
+	VertexShaderID(std::move(Program.VertexShaderID)),
+	FragmentShaderID(std::move(Program.FragmentShaderID)),
+	ProgramID(std::move(Program.ProgramID)),
+	Usable(std::move(Program.Usable))
+{
+	//Invalidate the other program to avoid shader deletion on destruction
+	Program.Usable = false;
+}
+
+void ShaderProgram::operator=(ShaderProgram && Program)
+{
+	VertexShaderID = std::move(Program.VertexShaderID);
+	FragmentShaderID = std::move(Program.FragmentShaderID);
+	ProgramID = std::move(Program.ProgramID);
+	Usable = std::move(Program.Usable);
+
+	//Invalidate the other program to avoid shader deletion on destruction
+	Program.Usable = false;
+}
+
 ShaderProgram::~ShaderProgram()
 {
-	glDeleteShader(VertexShaderID);
-	glDeleteShader(FragmentShaderID);
-	glDeleteProgram(ProgramID);
+	if (Usable)
+	{
+		glDeleteShader(VertexShaderID);
+		glDeleteShader(FragmentShaderID);
+		glDeleteProgram(ProgramID);
+	}
 }
 
 bool ShaderProgram::CompileShader(const std::string & ShaderFilename, ShaderType Type)
@@ -93,7 +117,9 @@ bool ShaderProgram::CompileShader(const std::string & ShaderFilename, ShaderType
 		glAttachShader(ProgramID, CompiledID);
 	}
 
-	return compilationSuccess == 1;
+	Usable = compilationSuccess == 1;
+
+	return Usable;
 }
 
 void ShaderProgram::LinkProgram()
@@ -104,4 +130,9 @@ void ShaderProgram::LinkProgram()
 void ShaderProgram::UseProgram()
 {
 	glUseProgram(ProgramID);
+}
+
+unsigned int ShaderProgram::GetUniformBlockIndex(const std::string & BlockName)
+{
+	return glGetUniformBlockIndex(ProgramID, BlockName.c_str());
 }

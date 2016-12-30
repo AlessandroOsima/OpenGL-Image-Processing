@@ -3,6 +3,14 @@
 #include <sstream>
 #include "Logger.h"
 
+void APIENTRY DebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
+{
+	std::stringstream logStream;
+
+	logStream << message << std::ends;
+
+	Logger::GetLogger().LogString(logStream.str(), LogType::LOG);
+}
 
 GLRenderer::GLRenderer()
 {
@@ -22,6 +30,8 @@ bool GLRenderer::Initialize(GLFWwindow * Window)
 		return false;
 	}
 
+	glDebugMessageCallback(&DebugCallback, this);
+
 	GLint majorVersionNumber = 0;
 	GLint minorVersionNumber = 0;
 
@@ -36,7 +46,6 @@ bool GLRenderer::Initialize(GLFWwindow * Window)
 
 	glfwGetFramebufferSize(Context, &width, &height);
 	glViewport(0, 0, width, height);
-
 
 	return true;
 

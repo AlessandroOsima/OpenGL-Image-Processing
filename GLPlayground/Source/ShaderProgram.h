@@ -13,15 +13,20 @@ class ShaderProgram
 {
 public:
 	ShaderProgram();
+	ShaderProgram(ShaderProgram && Program);
+	void operator=(ShaderProgram && Program);
 	~ShaderProgram();
 
 	bool CompileShader(const std::string & ShaderFilename, ShaderType Type);
 	void LinkProgram();
 	void UseProgram();
+	unsigned int GetUniformBlockIndex(const std::string & BlockName);
+
 
 private:
 	GLuint VertexShaderID;
 	GLuint FragmentShaderID;
 	GLuint ProgramID;
+	bool Usable = false;
 };
 

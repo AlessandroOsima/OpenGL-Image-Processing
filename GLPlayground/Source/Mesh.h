@@ -4,20 +4,21 @@
 #include <vector>
 #include "Texture.h"
 #include "ShaderProgram.h"
+#include <memory>
 
 using Index = uint32_t;
 
 struct Material
 {
-	Texture * DiffuseTexture;
-	ShaderProgram * Program; 
+	std::unique_ptr<Texture> DiffuseTexture = nullptr;
+	size_t Program = 0; 
 };
 
 
 class Mesh
 {
 public:
-	Mesh(const std::vector<Vertex> & Vertices, const std::vector<Index> & Indices, const Material & MaterialToUse);
+	Mesh(const std::vector<Vertex> & Vertices, const std::vector<Index> & Indices, Material && MaterialToUse);
 	~Mesh();
 
 	void GenerateMeshData();
@@ -35,10 +36,25 @@ public:
 		return Indices;
 	}
 
+	inline void SetModel(const glm::mat4 NewModel)
+	{
+		Model = NewModel;
+	}
+
+	inline glm::mat4 GetModel() const
+	{
+		return Model;
+	}
+
+	inline const Material & GetMaterial()
+	{
+		return CurrentMaterial;
+	}
 private:
 	std::vector<Vertex> Vertices;
 	std::vector<Index> Indices;
 	Material CurrentMaterial;
+	glm::mat4 Model;
 
 	GLuint VBO;
 	GLuint VEO;

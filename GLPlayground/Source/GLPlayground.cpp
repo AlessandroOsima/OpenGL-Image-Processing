@@ -12,12 +12,22 @@
 #include "Logger.h"
 #include "ResourceManager.h"
 #include "Texture.h"
-
+#include "GLUtilities.h"
+#include "RenderableScene.h"
+#include "Scene.h"
 
 struct WindowInfo
 {
 	int Width;
 	int Height;
+};
+
+struct Engine
+{
+	GLRenderer & Renderer;
+	RenderableScene & RendererScene;
+	Scene & LogicScene;
+	ResourceManager & ResManager;
 };
 
 GLFWwindow * CreateWindow(const WindowInfo & Window, const std::string & WindowTitle)
@@ -27,6 +37,10 @@ GLFWwindow * CreateWindow(const WindowInfo & Window, const std::string & WindowT
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 	glfwWindowHint(GLFW_DOUBLEBUFFER, GL_TRUE);
+
+#ifdef GL_DEBUG
+	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+#endif
 
 	return glfwCreateWindow(Window.Width, Window.Height, WindowTitle.c_str(), nullptr, nullptr);
 
@@ -45,7 +59,7 @@ int main()
 
 
 	WindowInfo windowInfo{ 800, 600 };
-	GLFWwindow * window = CreateWindow(windowInfo, "Test Window");
+	GLFWwindow * window = CreateWindow(windowInfo, "OpenGL Renderer - Texturing Test Window");
 
 	if (!window)
 	{
@@ -61,66 +75,23 @@ int main()
 		return -1;
 	}
 
-	//DUMMY MESH LOADING -- NEEDS SCENE CLASS
-	ShaderProgram prg;
 
-	//FIXME : Generating a string for each resource load is TERRIBLE
-	std::string vsStr = ResourceManager::GetShadersForlder();
+	RenderableScene renderScene(renderer);
+	Scene scene(renderScene);
 
-	if (!prg.CompileShader(vsStr += "base.vs", ShaderType::Vertex))
-	{
-		Logger::GetLogger().LogString("Vertex shader compile failed", ERROR);
-	}
-	std::string fsStr = ResourceManager::GetShadersForlder();
-
-	if (!prg.CompileShader(fsStr += "base.fs", ShaderType::Fragment))
-	{
-		Logger::GetLogger().LogString("Fragment shader compile failed", ERROR);
-	}
-
-	prg.LinkProgram();
-
-	Texture texture;
-
-	std::string txStr = ResourceManager::GetTexturesFolder();
-	texture.LoadFromFile(txStr += "test.jpg");
-	//
-
-	Mesh mesh(
-	  {  //Vertices
-		{glm::vec3(1.f, 1.f, 0.0f), glm::vec4(0, 0, 1, 1), glm::vec2(1,0) }, //0
-		{glm::vec3(1.f,  -1.f, 0.0f), glm::vec4(0, 1, 0, 1), glm::vec2(1,1) },  //1
-		{glm::vec3(-1.f, 1.f, 0.0f), glm::vec4(1, 0, 0, 1), glm::vec2(0,0) }, //2
-		{glm::vec3(-1.f,   -1.f, 0.0f), glm::vec4(0, 0, 1, 1), glm::vec2(0,1) }  //3
-	  },
-	     //Indices
-	  {
-		0,
-		1,
-		2,
-		2,
-		1,
-		3
-	  },
-
-	  { &texture, &prg }
-	);
-	//
-
-	prg.UseProgram();
+	scene.Init();
+	renderScene.Initialize();
 
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
 
-		renderer.Clear();
-
-		mesh.BindMesh();
-		renderer.DrawMesh(mesh);
-		mesh.UnbindMesh();
-
-		renderer.Present();
+		scene.Update();
+		renderScene.RenderScene();
 	}
+
+	renderScene.Initialize();
+	scene.DeInit();
 
 	glfwTerminate();
 

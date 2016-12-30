@@ -19,6 +19,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\ShaderManager.cpp" />
+    <ClCompile Include="Source\Scene.cpp" />
+    <ClCompile Include="Source\Component.cpp" />
+    <ClCompile Include="Source\GameObject.cpp" />
+    <ClCompile Include="Source\Renderable.cpp" />
+    <ClCompile Include="Source\RenderableScene.cpp" />
     <ClCompile Include="Source\ResourceManager.cpp" />
     <ClCompile Include="Source\GLPlayground.cpp" />
     <ClCompile Include="Source\GLRenderer.cpp" />
@@ -28,9 +34,17 @@
     <ClCompile Include="Source\ShaderProgram.cpp" />
     <ClCompile Include="Source\stdafx.cpp" />
     <ClCompile Include="Source\Texture.cpp" />
+    <ClCompile Include="Source\Transfrom.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\ShaderManager.h" />
+    <ClInclude Include="Source\Engine.h" />
+    <ClInclude Include="Source\Scene.h" />
+    <ClInclude Include="Source\Component.h" />
+    <ClInclude Include="Source\GameObject.h" />
     <ClInclude Include="Libs\stb\stb_image.h" />
+    <ClInclude Include="Source\Renderable.h" />
+    <ClInclude Include="Source\RenderableScene.h" />
     <ClInclude Include="Source\GLUtilities.h" />
     <ClInclude Include="Source\ResourceManager.h" />
     <ClInclude Include="Source\GLRenderer.h" />
@@ -41,6 +55,7 @@
     <ClInclude Include="Source\stdafx.h" />
     <ClInclude Include="Source\targetver.h" />
     <ClInclude Include="Source\Texture.h" />
+    <ClInclude Include="Source\Transfrom.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{F31A97AF-67E5-483F-A9E2-30EC5EBD4D25}</ProjectGuid>
