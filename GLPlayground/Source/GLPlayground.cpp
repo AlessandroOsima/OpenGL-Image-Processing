@@ -90,7 +90,7 @@ int main()
 		renderScene.RenderScene();
 	}
 
-	renderScene.Initialize();
+	renderScene.DeInitialize();
 	scene.DeInit();
 
 	glfwTerminate();

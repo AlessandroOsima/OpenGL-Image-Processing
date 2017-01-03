@@ -15,6 +15,13 @@ public:
 	ShaderProgram();
 	ShaderProgram(ShaderProgram && Program);
 	void operator=(ShaderProgram && Program);
+
+	//ShaderProgram & operator=(const ShaderProgram & Program) = default;
+
+	inline unsigned int GetShaderProgramID() const
+	{
+		return ProgramID;
+	}
 	~ShaderProgram();
 
 	bool CompileShader(const std::string & ShaderFilename, ShaderType Type);

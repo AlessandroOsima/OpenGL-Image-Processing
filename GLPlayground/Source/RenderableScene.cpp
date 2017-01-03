@@ -1,5 +1,7 @@
 #include "RenderableScene.h"
 #include "ShaderManager.h"
+#include <limits>
+
 RenderableScene::RenderableScene(GLRenderer & Renderer) : Renderer(Renderer)
 {
 }
@@ -24,6 +26,24 @@ void RenderableScene::RenderScene()
 	for (auto & mesh : Meshes)
 	{
 		//mesh->GetMaterial().Program
+		bool ShaderFound = false;
+		auto & Shader = ShaderManager::GetShaderManager().GetShader(mesh->GetMaterial().Program, ShaderFound);
+
+		if (ShaderFound)
+		{
+			unsigned int shaderUniformID = Shader.GetUniformBlockIndex("Matrices");
+
+			if (shaderUniformID != GL_INVALID_INDEX)
+			{
+				glBindBuffer(GL_UNIFORM_BUFFER, UniformMatricesBufferID);
+
+				glUniformBlockBinding(Shader.GetShaderProgramID(), shaderUniformID, 0);
+
+				glBindBufferBase( GL_UNIFORM_BUFFER, 0, UniformMatricesBufferID);
+
+				//glBindBuffer(GL_UNIFORM_BUFFER, 0);
+			}
+		}
 
 		mesh->BindMesh();
 		Renderer.DrawMesh(*mesh);
