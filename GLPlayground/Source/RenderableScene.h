@@ -28,13 +28,18 @@ public:
 	RenderableMeshLocation AddMesh(std::shared_ptr<Mesh> MeshToAdd);
 	void RemoveMesh(RenderableMeshLocation Location);
 
+
+
 private:
 	std::vector<std::shared_ptr<Mesh>> Meshes;
 	GLRenderer & Renderer;
 
 	RenderableMeshLocation FirstFree = 0;
 
-	GLuint UniformMatricesBufferID;
+	uint32_t UniformMatricesBufferID;
 	UniformMatrices UniformMatricesBuffer;
+
+	glm::mat4 CurrentView;
+	glm::mat4 CurrentProjection;
 };
 

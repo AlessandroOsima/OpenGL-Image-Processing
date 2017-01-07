@@ -16,19 +16,6 @@
 #include "RenderableScene.h"
 #include "Scene.h"
 
-struct WindowInfo
-{
-	int Width;
-	int Height;
-};
-
-struct Engine
-{
-	GLRenderer & Renderer;
-	RenderableScene & RendererScene;
-	Scene & LogicScene;
-	ResourceManager & ResManager;
-};
 
 GLFWwindow * CreateWindow(const WindowInfo & Window, const std::string & WindowTitle)
 {
@@ -79,8 +66,9 @@ int main()
 	RenderableScene renderScene(renderer);
 	Scene scene(renderScene);
 
-	scene.Init();
 	renderScene.Initialize();
+	scene.Init();
+	
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -90,8 +78,9 @@ int main()
 		renderScene.RenderScene();
 	}
 
-	renderScene.DeInitialize();
 	scene.DeInit();
+	renderScene.DeInitialize();
+	
 
 	glfwTerminate();
 

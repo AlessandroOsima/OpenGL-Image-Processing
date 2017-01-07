@@ -2,11 +2,11 @@
 #include "Component.h"
 #include <glm/glm.hpp>
 
-class Transfrom : public Component
+class Transform : public Component
 {
 public:
-	Transfrom();
-	virtual ~Transfrom();
+	Transform();
+	virtual ~Transform();
 
 	void Start() override;
 	void Update(float DeltaTime) override;
@@ -50,7 +50,7 @@ public:
 
 	inline glm::mat4 GetWorld() const
 	{
-		return Rotate * Scale * Translate;
+		return Scale * Translate * Rotate;
 	}
 
 private:

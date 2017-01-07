@@ -54,13 +54,13 @@
     <ClCompile Include="Source\RenderableScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Transfrom.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Scene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\ShaderManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Transform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -110,9 +110,6 @@
     <ClInclude Include="Source\RenderableScene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Transfrom.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -120,6 +117,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\ShaderManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Transform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

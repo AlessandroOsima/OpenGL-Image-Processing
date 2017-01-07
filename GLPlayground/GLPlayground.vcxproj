@@ -34,7 +34,7 @@
     <ClCompile Include="Source\ShaderProgram.cpp" />
     <ClCompile Include="Source\stdafx.cpp" />
     <ClCompile Include="Source\Texture.cpp" />
-    <ClCompile Include="Source\Transfrom.cpp" />
+    <ClCompile Include="Source\Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\ShaderManager.h" />
@@ -55,7 +55,7 @@
     <ClInclude Include="Source\stdafx.h" />
     <ClInclude Include="Source\targetver.h" />
     <ClInclude Include="Source\Texture.h" />
-    <ClInclude Include="Source\Transfrom.h" />
+    <ClInclude Include="Source\Transform.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{F31A97AF-67E5-483F-A9E2-30EC5EBD4D25}</ProjectGuid>

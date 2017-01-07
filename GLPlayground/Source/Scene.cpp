@@ -5,7 +5,8 @@
 #include "Renderable.h"
 #include "ShaderManager.h"
 #include "Logger.h"
-#include "Transfrom.h"
+#include "Transform.h"
+#include <glm/gtc/matrix_transform.hpp>
 
 Scene::Scene(RenderableScene & RenderScene) : RenderScene(RenderScene)
 {
@@ -37,10 +38,10 @@ void Scene::Init()
 
 	std::shared_ptr<Mesh> mesh(new Mesh(
 	{  //Vertices
-		{ glm::vec3(1.f, 1.f, 0.0f), glm::vec4(0, 0, 1, 1), glm::vec2(1,0) }, //0
-		{ glm::vec3(1.f,  -1.f, 0.0f), glm::vec4(0, 1, 0, 1), glm::vec2(1,1) },  //1
-		{ glm::vec3(-1.f, 1.f, 0.0f), glm::vec4(1, 0, 0, 1), glm::vec2(0,0) }, //2
-		{ glm::vec3(-1.f,   -1.f, 0.0f), glm::vec4(0, 0, 1, 1), glm::vec2(0,1) }  //3
+		{ glm::vec3(800.f, 600.f, -0.1f), glm::vec4(0, 0, 1, 1), glm::vec2(1,0) }, //0
+		{ glm::vec3(800.f,  -600.f, -0.1f), glm::vec4(0, 1, 0, 1), glm::vec2(1,1) },  //1
+		{ glm::vec3(-800.f, 600.f, -0.1f), glm::vec4(1, 0, 0, 1), glm::vec2(0,0) }, //2
+		{ glm::vec3(-800.f,   -600.f, -0.1f), glm::vec4(0, 0, 1, 1), glm::vec2(0,1) }  //3
 	},
 		//Indices
 	{
@@ -68,9 +69,9 @@ void Scene::Init()
 	Renderable* rend = (Renderable *)gm->GetComponentAtLocation(rendLoc);
 	rend->SetMesh(mesh);
 
-	ComponentLocation transfLoc = gm->AddComponent(std::make_unique<Transfrom>());
+	ComponentLocation transfLoc = gm->AddComponent(std::make_unique<Transform>());
 
-	Transfrom* transf = static_cast<Transfrom*>(gm->GetComponentAtLocation(transfLoc));
+	Transform* transf = static_cast<Transform*>(gm->GetComponentAtLocation(transfLoc));
 
 	GameObjects.push_back(std::move(gm));
 	
@@ -82,8 +83,16 @@ void Scene::Init()
 
 void Scene::Update()
 {
+
+
 	for (auto & gameObject : GameObjects)
 	{
+		Transform * tr = (Transform*)(gameObject->GetComponentOfType(ComponentsType::Transform));
+
+		//tr->SetRotate(glm::rotate(glm::mat4(), 0.7f, glm::vec3(0, 0, 1)));
+		tr->SetScale(glm::scale(glm::mat4(), glm::vec3(0.5f)));
+		tr->SetTranslate(glm::translate(glm::mat4(), glm::vec3(-800, 600.0f, 0)));
+		
 		gameObject->Update(0);
 	}
 }

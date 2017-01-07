@@ -1,6 +1,6 @@
 #include "Renderable.h"
 #include "Logger.h"
-#include "Transfrom.h"
+#include "Transform.h"
 
 Renderable::Renderable()
 {
@@ -28,7 +28,7 @@ void Renderable::LateUpdate(float DeltaTime)
 
 	if (cmp)
 	{
-		Transfrom * tr = static_cast<Transfrom *>(cmp);
+		Transform * tr = static_cast<Transform *>(cmp);
 
 		Mesh->SetModel(tr->GetWorld());
 	}

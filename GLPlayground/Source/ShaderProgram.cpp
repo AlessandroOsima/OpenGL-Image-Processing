@@ -42,6 +42,22 @@ ShaderProgram::~ShaderProgram()
 	}
 }
 
+bool ShaderProgram::BindBufferToUniform(uint32_t BufferID, uint32_t BindingLocation, const char * BindingName)
+{
+	unsigned int shaderUniformID = GetUniformBlockIndex(BindingName);
+
+	if (shaderUniformID != GL_INVALID_INDEX)
+	{
+		glUniformBlockBinding(GetShaderProgramID(), shaderUniformID, BindingLocation);
+
+		glBindBufferBase(GL_UNIFORM_BUFFER, BindingLocation, BufferID);
+
+		return true;
+	}
+
+	return false;
+}
+
 bool ShaderProgram::CompileShader(const std::string & ShaderFilename, ShaderType Type)
 {
 

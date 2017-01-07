@@ -38,6 +38,8 @@ public:
 		return Manager;
 	}
 
+	std::function<void(size_t)> OnShaderAdded;
+
 private:
 	std::map<std::size_t, ShaderProgram> Shaders;
 };

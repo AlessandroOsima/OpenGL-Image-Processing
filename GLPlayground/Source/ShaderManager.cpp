@@ -29,6 +29,11 @@ bool ShaderManager::CreateShader(const std::string & ShaderProgramName, const st
 
 	Shaders[hash] = std::move(prg);
 
+	if (OnShaderAdded)
+	{
+		OnShaderAdded(hash);
+	}
+
 	return true;
 }
 
