@@ -1,9 +1,12 @@
 #include "ShaderProgram.h"
+#include "Renderer/GLUtilities.h"
 #include <strstream>
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include "Logger.h"
+#include <assert.h>
+#include "Logger/Logger.h"
+#include <glm/gtc/type_ptr.hpp>
 
 ShaderProgram::ShaderProgram()
 {
@@ -44,7 +47,7 @@ ShaderProgram::~ShaderProgram()
 
 bool ShaderProgram::BindBufferToUniform(uint32_t BufferID, uint32_t BindingLocation, const char * BindingName)
 {
-	unsigned int shaderUniformID = GetUniformBlockIndex(BindingName);
+	unsigned int shaderUniformID = GetUniformBufferBlockIndex(BindingName);
 
 	if (shaderUniformID != GL_INVALID_INDEX)
 	{
@@ -108,24 +111,20 @@ bool ShaderProgram::CompileShader(const std::string & ShaderFilename, ShaderType
 
 	glGetShaderiv(CompiledID, GL_COMPILE_STATUS, &compilationSuccess);
 
-	if (!compilationSuccess)
+	GLint logSize;
+	glGetShaderiv(CompiledID, GL_INFO_LOG_LENGTH, &logSize);
+
+	if (logSize)
 	{
-		GLint logSize;
-		glGetShaderiv(CompiledID, GL_INFO_LOG_LENGTH, &logSize);
+		char * logMessage = new char[logSize];
 
-		if (logSize)
-		{
-			char * logMessage = new char[logSize];
+		glGetShaderInfoLog(CompiledID, logSize, NULL, logMessage);
 
-			glGetShaderInfoLog(CompiledID, logSize, NULL, logMessage);
+		std::stringstream stream;
+		stream << "Shader " << CompiledID << " compile log: \n" << logMessage << std::ends;
+		Logger::GetLogger().LogString(stream.str(), ERROR);
 
-			std::stringstream stream;
-			stream << "ERROR: Shader " << CompiledID << " compile failed with log: \n" << logMessage << std::ends;
-			Logger::GetLogger().LogString(stream.str(), ERROR);
-
-			delete logMessage;
-		}
-
+		delete logMessage;
 	}
 
 	if (compilationSuccess)
@@ -140,7 +139,30 @@ bool ShaderProgram::CompileShader(const std::string & ShaderFilename, ShaderType
 
 void ShaderProgram::LinkProgram()
 {
-	glLinkProgram(ProgramID);
+	glCheckFunction(glLinkProgram(ProgramID));
+
+	GLint linkSuccess;
+	glGetProgramiv(ProgramID, GL_LINK_STATUS, &linkSuccess);
+
+	std::stringstream stream;
+	stream << "Shader " << ProgramID << " link result is : " << linkSuccess << std::ends;
+	Logger::GetLogger().LogString(stream.str(), LOG);
+
+	GLint logSize;
+	glGetProgramiv(ProgramID, GL_INFO_LOG_LENGTH, &logSize);
+
+	if (logSize)
+	{
+		char * logMessage = new char[logSize];
+
+		glGetProgramInfoLog(ProgramID, logSize, NULL, logMessage);
+
+		stream.clear();
+		stream << "Shader " << ProgramID << " link log: \n" << logMessage << std::ends;
+		Logger::GetLogger().LogString(stream.str(), LOG);
+
+		delete logMessage;
+	}
 }
 
 void ShaderProgram::UseProgram()
@@ -148,7 +170,38 @@ void ShaderProgram::UseProgram()
 	glUseProgram(ProgramID);
 }
 
-unsigned int ShaderProgram::GetUniformBlockIndex(const std::string & BlockName)
+unsigned int ShaderProgram::GetUniformBufferBlockIndex(const std::string & BlockName)
 {
 	return glGetUniformBlockIndex(ProgramID, BlockName.c_str());
 }
+
+unsigned int ShaderProgram::GetUniformIndex(const std::string & UniformName)
+{
+	return glGetUniformLocation(ProgramID, UniformName.c_str());
+}
+
+void ShaderProgram::SetUniformMatrix4(unsigned int Location, const glm::mat4 & Mat4Val)
+{
+	glUniformMatrix4fv(Location, 1, false, glm::value_ptr(Mat4Val));
+}
+
+void ShaderProgram::SetUniformMatrix3(unsigned int Location, const glm::mat3 & Mat3Val)
+{
+	glUniformMatrix3fv(Location, 1, false, glm::value_ptr(Mat3Val));
+}
+
+void ShaderProgram::SetUniformVector4(unsigned int Location, const glm::vec4 & Vec4Val)
+{
+	glUniform4f(Location, Vec4Val.x, Vec4Val.y, Vec4Val.z, Vec4Val.w);
+}
+
+void ShaderProgram::SetUniformVector3(unsigned int Location, const glm::vec3 & Vec3Val)
+{
+	glUniform3f(Location, Vec3Val.x, Vec3Val.y, Vec3Val.z);
+}
+
+void ShaderProgram::SetUniformFloat(unsigned int Location, float FloatVal)
+{
+	glUniform1f(Location, FloatVal);
+}
+

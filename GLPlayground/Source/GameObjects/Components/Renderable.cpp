@@ -1,6 +1,6 @@
 #include "Renderable.h"
-#include "Logger.h"
-#include "Transform.h"
+#include "Logger/Logger.h"
+#include "GameObjects/Components/Transform.h"
 
 Renderable::Renderable()
 {

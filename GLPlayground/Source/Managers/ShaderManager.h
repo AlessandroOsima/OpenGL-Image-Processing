@@ -1,7 +1,7 @@
 #pragma once
 #include <map>
 #include <functional>
-#include "ShaderProgram.h"
+#include "Renderer/ShaderProgram.h"
 
 class ShaderManager
 {
@@ -12,23 +12,10 @@ public:
 	inline ShaderProgram & GetShader(const std::string & ShaderProgramName, bool & FoundShader)
 	{
 		std::size_t hash = std::hash<std::string>{}(ShaderProgramName);
-
-
 		return GetShader(hash, FoundShader);
 	}
 
-	inline ShaderProgram & GetShader(size_t ShaderProgramID, bool & FoundShader)
-	{
-		FoundShader = true;
-		std::map<std::size_t, ShaderProgram>::iterator it = Shaders.find(ShaderProgramID);
-
-		if (it == Shaders.end())
-		{
-			FoundShader = false;
-		}
-
-		return  Shaders[ShaderProgramID];
-	}
+	ShaderProgram & GetShader(size_t ShaderProgramID, bool & FoundShader);
 
 	void UseProgram(size_t Program);
 

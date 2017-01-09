@@ -2,19 +2,19 @@
 //
 
 #include "stdafx.h"
-#include "GLRenderer.h"
-#include "ShaderProgram.h"
-#include "Mesh.h"
+#include "Renderer/GLRenderer.h"
+#include "Renderer/ShaderProgram.h"
+#include "Renderer/Mesh.h"
 #include <GLFW/glfw3.h>
 #include <string>
 #include <iostream>
 #include <strstream>
-#include "Logger.h"
-#include "ResourceManager.h"
-#include "Texture.h"
-#include "GLUtilities.h"
-#include "RenderableScene.h"
-#include "Scene.h"
+#include "Logger/Logger.h"
+#include "Managers/ResourceManager.h"
+#include "Renderer/Texture.h"
+#include "Renderer/GLUtilities.h"
+#include "Renderer/RenderableScene.h"
+#include "GameObjects/Scene.h"
 
 
 GLFWwindow * CreateWindow(const WindowInfo & Window, const std::string & WindowTitle)
@@ -45,8 +45,8 @@ int main()
 	}
 
 
-	WindowInfo windowInfo{ 800, 600 };
-	GLFWwindow * window = CreateWindow(windowInfo, "OpenGL Renderer - Texturing Test Window");
+	WindowInfo windowInfo{ 600, 840 };
+	GLFWwindow * window = CreateWindow(windowInfo, "OpenGL Renderer - Filtering");
 
 	if (!window)
 	{

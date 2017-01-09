@@ -1,9 +1,9 @@
 #pragma once
-#include "Component.h"
-#include "Mesh.h"
+#include "GameObjects/Component.h"
+#include "Renderer/Mesh.h"
 #include <memory>
-#include "RenderableScene.h"
-#include "Scene.h"
+#include "Renderer/RenderableScene.h"
+#include "GameObjects/Scene.h"
 
 class Scene;
 
@@ -45,6 +45,22 @@ public:
 
 		Loc = LogicScene->GetRenderScene().AddMesh(Mesh);
 		MeshIsRendering = true;
+	}
+
+
+	inline const Material * GetCurrentMeshMaterial() const
+	{
+		if (Mesh)
+		{
+			return & Mesh->GetMaterial();
+		}
+
+		return nullptr;
+	}
+
+	inline bool HasMesh()
+	{
+		return Mesh != nullptr;
 	}
 
 

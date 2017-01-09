@@ -7,7 +7,7 @@ enum class ComponentsType : int
 	Renderable
 };
 
-class GameObject;
+class Object;
 class Scene;
 
 class Component
@@ -20,7 +20,7 @@ public:
 	virtual void Update(float DeltaTime) = 0;
 	virtual void LateUpdate(float DeltaTime) = 0;
 	virtual void End() = 0;
-	virtual void OnAttached(GameObject * AttachedTo);
+	virtual void OnAttached(Object * AttachedTo);
 	virtual void OnDetached();
 
 	virtual ComponentsType GetType()
@@ -34,7 +34,7 @@ public:
 	}
 
 protected:
-	GameObject * Owner;
+	Object * Owner;
 
 protected:
 	//Can and sometimes will be nullptr

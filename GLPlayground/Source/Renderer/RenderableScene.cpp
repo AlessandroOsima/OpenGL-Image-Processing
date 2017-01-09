@@ -1,5 +1,5 @@
 #include "RenderableScene.h"
-#include "ShaderManager.h"
+#include "Managers/ShaderManager.h"
 #include <limits>
 #include "GLUtilities.h"
 #include <glm/gtc/matrix_transform.hpp>
@@ -22,7 +22,7 @@ void RenderableScene::Initialize()
 	WindowInfo info;
 	Renderer.GetCurrentWindowInfo(info);
 
-	CurrentProjection = glm::ortho((float)-info.Width, (float)info.Width, (float)-info.Height, (float)info.Height, 0.f , 1.f);
+	CurrentProjection = glm::ortho((float)0, (float)info.Width, (float)0, (float)info.Height, 0.f , 1.f);
 
 	ShaderManager::GetShaderManager().OnShaderAdded = [&](size_t HashedProgram)
 	{
@@ -37,7 +37,7 @@ void RenderableScene::Initialize()
 			program.BindBufferToUniform(UniformMatricesBufferID, MatricesBindingLocation, MatricesUniformName);
 		}
 
-		glNamedBufferSubData(UniformMatricesBufferID, 0, sizeof(glm::mat4), &CurrentProjection);
+		glNamedBufferSubData( UniformMatricesBufferID, 0, sizeof(glm::mat4), &CurrentProjection);
 
 		glNamedBufferSubData(UniformMatricesBufferID, sizeof(glm::mat4), sizeof(glm::mat4), &CurrentView);
 	};

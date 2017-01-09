@@ -1,6 +1,6 @@
 #pragma once
-#include "RenderableScene.h"
-#include "GameObject.h"
+#include "Renderer/RenderableScene.h"
+#include "Object.h"
 
 class Scene
 {
@@ -19,6 +19,6 @@ public:
 
 private:
 	RenderableScene & RenderScene;
-	std::vector<std::unique_ptr<GameObject>> GameObjects;
+	std::vector<std::unique_ptr<Object>> GameObjects;
 };
 

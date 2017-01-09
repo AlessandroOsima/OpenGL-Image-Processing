@@ -1,17 +1,17 @@
-#include "GameObject.h"
+#include "GameObjects/Object.h"
 #include "Scene.h"
 
 
-GameObject::GameObject()
+Object::Object()
 {
 }
 
 
-GameObject::~GameObject()
+Object::~Object()
 {
 }
 
-unsigned int GameObject::AddComponent(std::unique_ptr<Component> && ComponentToAdd)
+unsigned int Object::AddComponent(std::unique_ptr<Component> && ComponentToAdd)
 {
 	Components.push_back(std::move(ComponentToAdd));
 	ComponentLocation loc = Components.size() - 1;
@@ -23,7 +23,7 @@ unsigned int GameObject::AddComponent(std::unique_ptr<Component> && ComponentToA
 	return Components.size() - 1;
 }
 
-void GameObject::RemoveComponent(ComponentLocation Location)
+void Object::RemoveComponent(ComponentLocation Location)
 {
 	if (Location >= Components.size())
 	{
@@ -35,13 +35,13 @@ void GameObject::RemoveComponent(ComponentLocation Location)
 	Components.erase(Components.begin() + Location);
 }
 
-unsigned int GameObject::GetLocation(const std::unique_ptr<Component> & ComponentToLocate)
+unsigned int Object::GetLocation(const std::unique_ptr<Component> & ComponentToLocate)
 {
 	std::vector<std::unique_ptr<Component>>::iterator location = std::find(Components.begin(), Components.end(), ComponentToLocate);
 	return  location - Components.begin();
 }
 
-Component * GameObject::GetComponentAtLocation(ComponentLocation Location)
+Component * Object::GetComponentAtLocation(ComponentLocation Location)
 {
 	//static std::unique_ptr<Component> nullReturn = std::unique_ptr<Component>(nullptr);
 
@@ -53,7 +53,7 @@ Component * GameObject::GetComponentAtLocation(ComponentLocation Location)
 	return Components[Location].get();
 }
 
-std::vector<Component *>  GameObject::GetComponentsOfType(ComponentsType Type)
+std::vector<Component *>  Object::GetComponentsOfType(ComponentsType Type)
 {
 	std::vector<Component *> vec;
 
@@ -68,7 +68,7 @@ std::vector<Component *>  GameObject::GetComponentsOfType(ComponentsType Type)
 	return vec;
 }
 
-Component * GameObject::GetComponentOfType(ComponentsType Type)
+Component * Object::GetComponentOfType(ComponentsType Type)
 {
 	for (auto & Component : Components)
 	{
@@ -81,7 +81,7 @@ Component * GameObject::GetComponentOfType(ComponentsType Type)
 	return nullptr;
 }
 
-void GameObject::Start()
+void Object::Start()
 {
 	for (auto & Component : Components)
 	{
@@ -89,7 +89,7 @@ void GameObject::Start()
 	}
 }
 
-void GameObject::Update(float DeltaTime)
+void Object::Update(float DeltaTime)
 {
 	for (auto & Component : Components)
 	{
@@ -102,7 +102,7 @@ void GameObject::Update(float DeltaTime)
 	}
 }
 
-void GameObject::End()
+void Object::End()
 {
 	for (auto & Component : Components)
 	{

@@ -8,6 +8,5 @@ in vec2 uvCoords;
 
 void main()
 {
-   vec4 diffuseColor = vec4(texture(diffuseSampler, uvCoords).xyz, 1);
-   color = diffuseColor;
+  color = vec4(texture(diffuseSampler, uvCoords).xyz, 1);
 }

@@ -19,43 +19,51 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\ShaderManager.cpp" />
-    <ClCompile Include="Source\Scene.cpp" />
-    <ClCompile Include="Source\Component.cpp" />
-    <ClCompile Include="Source\GameObject.cpp" />
-    <ClCompile Include="Source\Renderable.cpp" />
-    <ClCompile Include="Source\RenderableScene.cpp" />
-    <ClCompile Include="Source\ResourceManager.cpp" />
+    <ClCompile Include="Source\Math\Filters.cpp" />
+    <ClCompile Include="Source\GameObjects\Component.cpp" />
+    <ClCompile Include="Source\GameObjects\Components\Renderable.cpp" />
+    <ClCompile Include="Source\GameObjects\Components\Transform.cpp" />
+    <ClCompile Include="Source\GameObjects\Object.cpp" />
+    <ClCompile Include="Source\GameObjects\Scene.cpp" />
+    <ClCompile Include="Source\Logger\Logger.cpp" />
+    <ClCompile Include="Source\Managers\ResourceManager.cpp" />
+    <ClCompile Include="Source\Managers\ShaderManager.cpp" />
+    <ClCompile Include="Source\Math\MathTypes.cpp" />
+    <ClCompile Include="Source\Renderer\GLRenderer.cpp" />
+    <ClCompile Include="Source\Renderer\Mesh.cpp" />
+    <ClCompile Include="Source\Renderer\RenderableScene.cpp" />
+    <ClCompile Include="Source\Renderer\ShaderProgram.cpp" />
+    <ClCompile Include="Source\Renderer\Texture.cpp" />
     <ClCompile Include="Source\GLPlayground.cpp" />
-    <ClCompile Include="Source\GLRenderer.cpp" />
-    <ClCompile Include="Source\Logger.cpp" />
-    <ClCompile Include="Source\MathTypes.cpp" />
-    <ClCompile Include="Source\Mesh.cpp" />
-    <ClCompile Include="Source\ShaderProgram.cpp" />
-    <ClCompile Include="Source\stdafx.cpp" />
-    <ClCompile Include="Source\Texture.cpp" />
-    <ClCompile Include="Source\Transform.cpp" />
+    <ClCompile Include="Source\GameObjects\Objects\TexturedGameObject.cpp" />
+    <ClCompile Include="Source\Managers\TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\ShaderManager.h" />
-    <ClInclude Include="Source\Engine.h" />
-    <ClInclude Include="Source\Scene.h" />
-    <ClInclude Include="Source\Component.h" />
-    <ClInclude Include="Source\GameObject.h" />
+    <ClInclude Include="Source\Math\Filters.h" />
+    <ClInclude Include="Source\GameObjects\Component.h" />
+    <ClInclude Include="Source\GameObjects\Components\Renderable.h" />
+    <ClInclude Include="Source\GameObject\Components\Scene.h" />
+    <ClInclude Include="Source\GameObjects\Components\Transform.h" />
+    <ClInclude Include="Source\GameObjects\Object.h" />
+    <ClInclude Include="Source\GameObjects\Scene.h" />
+    <ClInclude Include="Source\Logger\Logger.h" />
+    <ClInclude Include="Source\Managers\ResourceManager.h" />
+    <ClInclude Include="Source\Managers\ShaderManager.h" />
+    <ClInclude Include="Source\Math\MathTypes.h" />
+    <ClInclude Include="Source\Renderer\GLRenderer.h" />
+    <ClInclude Include="Source\Renderer\GLUtilities.h" />
+    <ClInclude Include="Source\Renderer\Mesh.h" />
+    <ClInclude Include="Source\Renderer\RenderableScene.h" />
+    <ClInclude Include="Source\Renderer\ShaderProgram.h" />
+    <ClInclude Include="Source\Renderer\Texture.h" />
     <ClInclude Include="Libs\stb\stb_image.h" />
-    <ClInclude Include="Source\Renderable.h" />
-    <ClInclude Include="Source\RenderableScene.h" />
-    <ClInclude Include="Source\GLUtilities.h" />
-    <ClInclude Include="Source\ResourceManager.h" />
-    <ClInclude Include="Source\GLRenderer.h" />
-    <ClInclude Include="Source\Logger.h" />
-    <ClInclude Include="Source\MathTypes.h" />
-    <ClInclude Include="Source\Mesh.h" />
-    <ClInclude Include="Source\ShaderProgram.h" />
     <ClInclude Include="Source\stdafx.h" />
     <ClInclude Include="Source\targetver.h" />
-    <ClInclude Include="Source\Texture.h" />
-    <ClInclude Include="Source\Transform.h" />
+    <ClInclude Include="Source\GameObjects\Objects\TexturedGameObject.h" />
+    <ClInclude Include="Source\Managers\TextureManager.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{F31A97AF-67E5-483F-A9E2-30EC5EBD4D25}</ProjectGuid>

@@ -1,6 +1,6 @@
 #include "Mesh.h"
-#include "ShaderManager.h"
-
+#include "Managers/ShaderManager.h"
+#include "Managers/TextureManager.h"
 
 Mesh::Mesh(const std::vector<Vertex> & Vertices, const std::vector<Index> & Indices, Material && MaterialToUse) : Vertices(Vertices), Indices(Indices), CurrentMaterial(std::move(MaterialToUse))
 {
@@ -62,10 +62,69 @@ void Mesh::BindMesh()
 	
 	if (CurrentMaterial.DiffuseTexture)
 	{
-		CurrentMaterial.DiffuseTexture->Bind();
+		bool Found = false;
+		Texture & tx = TextureManager::GetTextureManager().GetTextureFromID(CurrentMaterial.DiffuseTexture, Found);
+
+		if (Found)
+		{
+			tx.Bind();
+		}
+
 		glBindSampler(0, DiffuseSampler);
 
 		ShaderManager::GetShaderManager().UseProgram(CurrentMaterial.Program);
+		
+		Found = false;
+		ShaderProgram & shader = ShaderManager::GetShaderManager().GetShader(CurrentMaterial.Program, Found);
+
+		if (Found)
+		{
+			for (UniformsToBind & uniform : Uniforms)
+			{
+				unsigned int index = shader.GetUniformIndex(uniform.UniformName);
+
+				if (index != GL_INVALID_INDEX)
+				{
+					switch (uniform.Type)
+					{
+						case  UniformType::Mat3 :
+						{
+							shader.SetUniformMatrix3(index, uniform.TypeData.mat3Val);
+							break;
+						}
+						
+						case  UniformType::Mat4:
+						{
+							shader.SetUniformMatrix4(index, uniform.TypeData.mat4Val);
+							break;
+						}
+						
+						case  UniformType::Vec3 :
+						{
+							shader.SetUniformVector3(index, uniform.TypeData.vec3Val);
+							break;
+						}
+						case  UniformType::Vec4 :
+						{
+							shader.SetUniformVector4(index, uniform.TypeData.vec4Val);
+							break;
+						}
+
+						case  UniformType::Float :
+						{
+							shader.SetUniformFloat(index, uniform.TypeData.floatVal);
+							break;
+						}
+
+						default:
+						{
+							break;
+						}
+					}
+				}
+			}
+		}
+
 	}
 }
 
@@ -73,7 +132,14 @@ void Mesh::UnbindMesh()
 {
 	if (CurrentMaterial.DiffuseTexture)
 	{
-		CurrentMaterial.DiffuseTexture->UnBind();
+		bool Found = false;
+		Texture & tx = TextureManager::GetTextureManager().GetTextureFromID(CurrentMaterial.DiffuseTexture, Found);
+
+		if (Found)
+		{
+			tx.UnBind();
+		}
+
 		glBindSampler(0, 0);
 	}
 	glBindVertexArray(0);

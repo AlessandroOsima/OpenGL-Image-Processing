@@ -1,5 +1,5 @@
 #pragma once
-#include "Component.h"
+#include "GameObjects/Component.h"
 #include <glm/glm.hpp>
 
 class Transform : public Component
@@ -50,7 +50,7 @@ public:
 
 	inline glm::mat4 GetWorld() const
 	{
-		return Scale * Translate * Rotate;
+		return Translate * Scale * Rotate;
 	}
 
 private:

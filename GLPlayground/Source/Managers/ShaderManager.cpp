@@ -1,6 +1,6 @@
 #include "ShaderManager.h"
-#include "Logger.h"
-#include "ResourceManager.h"
+#include "Logger/Logger.h"
+#include "Managers/ResourceManager.h"
 
 bool ShaderManager::CreateShader(const std::string & ShaderProgramName, const std::string & VertexShaderFilename, const std::string & FragmentShaderFilename, size_t & ShaderProgramID)
 {
@@ -35,6 +35,19 @@ bool ShaderManager::CreateShader(const std::string & ShaderProgramName, const st
 	}
 
 	return true;
+}
+
+ShaderProgram & ShaderManager::GetShader(size_t ShaderProgramID, bool & FoundShader)
+{
+	FoundShader = true;
+	std::map<std::size_t, ShaderProgram>::iterator it = Shaders.find(ShaderProgramID);
+
+	if (it == Shaders.end())
+	{
+		FoundShader = false;
+	}
+
+	return  Shaders[ShaderProgramID];
 }
 
 void ShaderManager::UseProgram(size_t Program)

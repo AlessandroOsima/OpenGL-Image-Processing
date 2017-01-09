@@ -1,17 +1,42 @@
 #pragma once
 #include <GL/glew.h>
-#include "MathTypes.h"
+#include "Math/MathTypes.h"
 #include <vector>
-#include "Texture.h"
-#include "ShaderProgram.h"
+#include "Renderer/Texture.h"
+#include "Renderer/ShaderProgram.h"
 #include <memory>
 
 using Index = uint32_t;
 
 struct Material
 {
-	std::unique_ptr<Texture> DiffuseTexture = nullptr;
+	size_t DiffuseTexture = 0;
 	size_t Program = 0; 
+};
+
+union UniformTypeData
+{
+	glm::mat3 mat3Val;
+	glm::mat4 mat4Val;
+	glm::vec4 vec4Val;
+	glm::vec3 vec3Val;
+	float floatVal;
+};
+
+enum class UniformType
+{
+	Mat4,
+	Mat3,
+	Vec4,
+	Vec3,
+	Float
+};
+
+struct UniformsToBind
+{
+    std::string UniformName;
+	UniformTypeData TypeData;
+	UniformType Type;
 };
 
 
@@ -50,7 +75,26 @@ public:
 	{
 		return CurrentMaterial;
 	}
+
+	inline unsigned int AddUniform(const UniformsToBind & Uniform)
+	{
+		Uniforms.push_back(Uniform);
+		return Uniforms.size() - 1;
+	}
+
+	inline UniformsToBind * GetUniform(unsigned int Index)
+	{
+		if (Index < Uniforms.size())
+		{
+			return &Uniforms[Index];
+		}
+
+		return nullptr;
+	}
+
+
 private:
+	std::vector<UniformsToBind> Uniforms;
 	std::vector<Vertex> Vertices;
 	std::vector<Index> Indices;
 	Material CurrentMaterial;

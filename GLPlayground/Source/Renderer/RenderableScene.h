@@ -1,7 +1,7 @@
 #pragma once
-#include "Mesh.h"
+#include "Renderer/Mesh.h"
 #include <memory>
-#include "GLRenderer.h"
+#include "Renderer/GLRenderer.h"
 
 using RenderableMeshLocation = uint64_t;
 
@@ -28,7 +28,15 @@ public:
 	RenderableMeshLocation AddMesh(std::shared_ptr<Mesh> MeshToAdd);
 	void RemoveMesh(RenderableMeshLocation Location);
 
+	inline void SetProjection(const glm::mat4 & Projection)
+	{
+		CurrentProjection = Projection;
+	}
 
+	inline void SetView(const glm::mat4 & View)
+	{
+		CurrentView = View;
+	}
 
 private:
 	std::vector<std::shared_ptr<Mesh>> Meshes;
