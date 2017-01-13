@@ -9,6 +9,7 @@
 #include "GameObjects/Objects/TexturedGameObject.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include "Math/Filters.h"
+#include "Managers/TextureManager.h"
 
 Scene::Scene(RenderableScene & RenderScene) : RenderScene(RenderScene)
 {
@@ -31,20 +32,37 @@ void Scene::Init()
 	sharpened->SetLogicScene(this);
 	GameObjects.push_back(std::move(sharpened));
 
+	std::unique_ptr<Object> median = std::make_unique<TexturedGameObject>("sobel", "test.jpg");
+	median->SetLogicScene(this);
+	GameObjects.push_back(std::move(median));
+
 	
 	for (auto & gameObject : GameObjects)
 	{
 		gameObject->Start();
 	}
 
+	bool Found = false;
+
+	TextureInfo info = TextureManager::GetTextureManager().GetTextureFromName("test.jpg", Found).GetTextureInfo();
+
+	if (!Found)
+	{
+		Logger::GetLogger().LogString("Unable to find texture info for test.jpg", LogType::ERROR);
+		return;
+	}
+
+	float sizeX = info.Width;
+	float sizeY = info.Height;
+
 	//ORIGINAL
 	Transform * originalTransform = static_cast<Transform*>(GameObjects[0]->GetComponentOfType(ComponentsType::Transform));
-	originalTransform->SetTranslate(glm::translate(glm::mat4(), glm::vec3(300 / 2, 420.0f + 210.f, 0)));
+	originalTransform->SetTranslate(glm::translate(glm::mat4(), glm::vec3(sizeX / 2, sizeY + sizeY / 2, 0)));
 	
 
 	//BLUR
 	Transform * blurredTransform = static_cast<Transform*>(GameObjects[1]->GetComponentOfType(ComponentsType::Transform));
-	blurredTransform->SetTranslate(glm::translate(glm::mat4(), glm::vec3(450, 420.0f + 210.f, 0)));
+	blurredTransform->SetTranslate(glm::translate(glm::mat4(), glm::vec3(sizeX + sizeX / 2, sizeY + sizeY / 2, 0)));
 	
 	Renderable * blurredRenderable = static_cast<Renderable*>(GameObjects[1]->GetComponentOfType(ComponentsType::Renderable));
 	UniformTypeData blurredUniformData { Filters::GenerateSmoothingMatrix() };
@@ -53,12 +71,16 @@ void Scene::Init()
 
 	//SHARPEN
 	Transform * sharpenedTransform = static_cast<Transform*>(GameObjects[2]->GetComponentOfType(ComponentsType::Transform));
-	sharpenedTransform->SetTranslate(glm::translate(glm::mat4(), glm::vec3(300 / 2, 420.0f / 2, 0)));
+	sharpenedTransform->SetTranslate(glm::translate(glm::mat4(), glm::vec3(sizeX / 2, sizeY / 2, 0)));
 
 	Renderable * sharpenedRenderable = static_cast<Renderable*>(GameObjects[2]->GetComponentOfType(ComponentsType::Renderable));
 	UniformTypeData sharpenedUniformData { Filters::GenerateSharpenMatrix(8) };
 	UniformsToBind sharpenedUniform{ "Mask", sharpenedUniformData, UniformType::Mat3 };
 	sharpenedRenderable->GetMesh()->AddUniform(sharpenedUniform);
+
+	//MEDIAN
+	Transform * medianTransform = static_cast<Transform*>(GameObjects[3]->GetComponentOfType(ComponentsType::Transform));
+	medianTransform->SetTranslate(glm::translate(glm::mat4(), glm::vec3(sizeX + sizeX / 2, sizeY / 2, 0)));
 
 }
 

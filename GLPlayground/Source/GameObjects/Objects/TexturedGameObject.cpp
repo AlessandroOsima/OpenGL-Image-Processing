@@ -77,7 +77,7 @@ void TexturedGameObject::Start()
 	bool Found = false;
 	Texture & tx = TextureManager::GetTextureManager().GetTextureFromID(TextureID, Found);
 
-	transf->SetScale(glm::scale(glm::mat4(), glm::vec3(tx.GetImageInfo().Width / 2, tx.GetImageInfo().Height / 2, 1.f)));
+	transf->SetScale(glm::scale(glm::mat4(), glm::vec3(tx.GetTextureInfo().Width / 2, tx.GetTextureInfo().Height / 2, 1.f)));
 }
 
 void TexturedGameObject::Update(float DeltaTime)

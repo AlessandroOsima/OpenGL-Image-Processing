@@ -24,7 +24,7 @@ public:
 		return ID;
 	}
 
-	inline const TextureInfo & GetImageInfo()
+	inline const TextureInfo & GetTextureInfo()
 	{
 		return Info;
 	}
