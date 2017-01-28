@@ -20,6 +20,7 @@ bool Texture::LoadFromFile(const std::string & ImageFile)
 
 	glCheckError("glCreateTextures");
 
+	stbi_set_flip_vertically_on_load(1);
 	unsigned char * data = stbi_load(ImageFile.data(), &Info.Width, &Info.Height, &Info.Format, 4);
 
 	if (data)
@@ -59,7 +60,7 @@ void Texture::Bind()
 
 void Texture::UnBind()
 {
-	glBindTextureUnit(0, 0);
+	//glBindTextureUnit(0, 0);
 }
 
 Texture::~Texture()

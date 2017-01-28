@@ -101,14 +101,14 @@ void RenderableScene::RenderScene()
 				group.RenderPasses[i].GetMaterial().Bind();
 				group.RenderPasses[i].BindUniforms();
 
-				glNamedBufferSubData(UniformMatricesBufferID, sizeof(glm::mat4), sizeof(glm::mat4), &glm::mat4());
-				glNamedBufferSubData(UniformMatricesBufferID, sizeof(glm::mat4) * 2, sizeof(glm::mat4), &mesh.Mesh->GetModel());
+				glNamedBufferSubData(UniformMatricesBufferID, 0, sizeof(glm::mat4), &glm::mat4(1));
+				glNamedBufferSubData(UniformMatricesBufferID, sizeof(glm::mat4), sizeof(glm::mat4), &glm::mat4(1));
+				glNamedBufferSubData(UniformMatricesBufferID, sizeof(glm::mat4) * 2, sizeof(glm::mat4), &glm::mat4(1));
 
 				Renderer.DrawMesh(*mesh.Mesh);
 
 				group.RenderPasses[i].GetMaterial().UnBind();
 				mesh.Mesh->UnbindMesh();
-
 
 				glBindTexture(GL_TEXTURE_2D, textureAttachment.GetID());
 				glCheckFunction(glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, colorTarget.GetTextureInfo().Width, colorTarget.GetTextureInfo().Height));

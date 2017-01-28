@@ -113,9 +113,10 @@ void Scene::Init()
 	
 	size_t BaseHash;
 	size_t GrayscaleHash;
+	size_t SmoothHash;
 	size_t SobelHash;
 
-	if (ShaderManager::GetShaderManager().CreateShader("base", "base.vs", "base.fs", BaseHash) &&ShaderManager::GetShaderManager().CreateShader("grayscale", "grayscale.vs", "grayscale.fs", GrayscaleHash) && ShaderManager::GetShaderManager().CreateShader("sobel", "sobel.vs", "sobel.fs", SobelHash))
+	if (ShaderManager::GetShaderManager().CreateShader("base", "base.vs", "base.fs", BaseHash) && ShaderManager::GetShaderManager().CreateShader("grayscale", "grayscale.vs", "grayscale.fs", GrayscaleHash) && ShaderManager::GetShaderManager().CreateShader("box", "box.vs", "box.fs", SmoothHash) &&  ShaderManager::GetShaderManager().CreateShader("sobel", "sobel.vs", "sobel.fs", SobelHash))
 	{
 		RenderPassGroup passGroup(sizeX, sizeY);
 
@@ -123,9 +124,16 @@ void Scene::Init()
 		RenderPass passBase(passBaseMaterial, false, true);
 		passGroup.RenderPasses.push_back(std::move(passBase));
 
-		Material passGrayMaterial { textureID, GrayscaleHash };
-		RenderPass passGray(passGrayMaterial, false, true);
+		Material passGrayMaterial{ textureID, GrayscaleHash };
+		RenderPass passGray(passGrayMaterial, true, true);
 		passGroup.RenderPasses.push_back(std::move(passGray));
+
+		Material passSmoothMaterial{ textureID, SmoothHash };
+		RenderPass passSmooth(passSmoothMaterial, false, true);
+		UniformTypeData smoothUniformData{ Filters::GenerateSmoothingMatrix() };
+		UniformsToBind smoothUniform{ "Mask", smoothUniformData, UniformType::Mat3 };
+		passSmooth.AddUniform(smoothUniform);
+		passGroup.RenderPasses.push_back(std::move(passSmooth));
 
 		Material passSobelMaterial{ textureID, SobelHash };
 		RenderPass passSobel(passSobelMaterial, true, true);
