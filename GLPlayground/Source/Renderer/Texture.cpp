@@ -40,9 +40,21 @@ bool Texture::LoadFromFile(const std::string & ImageFile)
 	return true;
 }
 
+void Texture::GenerateTextureWithSize(uint32_t Width, uint32_t Height)
+{
+	assert(Width);
+	assert(Height);
+
+	Info.Width = Width;
+	Info.Height = Height;
+
+	glCreateTextures(GL_TEXTURE_2D, 1, &ID);
+	glTextureStorage2D(ID, 1, GL_RGBA8, Width, Height);
+}
+
 void Texture::Bind()
 {
-	glBindTextureUnit(0, ID);
+	glCheckFunction(glBindTextureUnit(0, ID));
 }
 
 void Texture::UnBind()

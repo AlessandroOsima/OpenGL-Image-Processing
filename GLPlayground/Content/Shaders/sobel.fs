@@ -7,7 +7,6 @@ in vec4 fragmentColor;
 in vec2 uvCoords;
 
 
-
 void main()
 {
 
@@ -22,8 +21,6 @@ void main()
    SobelX[2] = vec3(-1, 0, 1);
 
    vec4 sum = vec4(0,0,0,1.f);
-
-   //0.2989 * R + 0.5870 * G + 0.1140 * B 
 
    //Up 1 col
    sum += textureOffset(diffuseSampler, uvCoords, ivec2(-1,-1)) * SobelY[0].x;

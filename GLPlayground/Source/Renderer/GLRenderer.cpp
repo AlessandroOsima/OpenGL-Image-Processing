@@ -64,8 +64,6 @@ void GLRenderer::Present()
 
 void GLRenderer::DrawMesh(const Mesh & mesh)
 {
-	//glDrawArrays(GL_TRIANGLES, 0, mesh.GetVertices().size());
-
 	glDrawElements(GL_TRIANGLES, (GLsizei)mesh.GetIndices().size(), GL_UNSIGNED_INT, 0);
 }
 

@@ -2,7 +2,7 @@
 #include "Managers/ShaderManager.h"
 #include "Managers/TextureManager.h"
 
-Mesh::Mesh(const std::vector<Vertex> & Vertices, const std::vector<Index> & Indices, Material && MaterialToUse) : Vertices(Vertices), Indices(Indices), CurrentMaterial(std::move(MaterialToUse))
+Mesh::Mesh(const std::vector<Vertex> & Vertices, const std::vector<Index> & Indices) : Vertices(Vertices), Indices(Indices)
 {
 	GenerateMeshData();
 }
@@ -13,7 +13,6 @@ Mesh::~Mesh()
 	glDeleteBuffers(1, &VEO);
 
 	glDeleteVertexArrays(1, &VAO);
-	glDeleteSamplers(1, &DiffuseSampler);
 }
 
 void Mesh::GenerateMeshData()
@@ -46,11 +45,6 @@ void Mesh::GenerateMeshData()
 
 	glBindVertexArray(0);
 
-	if (CurrentMaterial.DiffuseTexture)
-	{
-		glCreateSamplers(1, &DiffuseSampler);
-	}
-
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	
@@ -59,88 +53,9 @@ void Mesh::GenerateMeshData()
 void Mesh::BindMesh()
 {
 	glBindVertexArray(VAO);
-	
-	if (CurrentMaterial.DiffuseTexture)
-	{
-		bool Found = false;
-		Texture & tx = TextureManager::GetTextureManager().GetTextureFromID(CurrentMaterial.DiffuseTexture, Found);
-
-		if (Found)
-		{
-			tx.Bind();
-		}
-
-		glBindSampler(0, DiffuseSampler);
-
-		ShaderManager::GetShaderManager().UseProgram(CurrentMaterial.Program);
-		
-		Found = false;
-		ShaderProgram & shader = ShaderManager::GetShaderManager().GetShader(CurrentMaterial.Program, Found);
-
-		if (Found)
-		{
-			for (UniformsToBind & uniform : Uniforms)
-			{
-				unsigned int index = shader.GetUniformIndex(uniform.UniformName);
-
-				if (index != GL_INVALID_INDEX)
-				{
-					switch (uniform.Type)
-					{
-						case  UniformType::Mat3 :
-						{
-							shader.SetUniformMatrix3(index, uniform.TypeData.mat3Val);
-							break;
-						}
-						
-						case  UniformType::Mat4:
-						{
-							shader.SetUniformMatrix4(index, uniform.TypeData.mat4Val);
-							break;
-						}
-						
-						case  UniformType::Vec3 :
-						{
-							shader.SetUniformVector3(index, uniform.TypeData.vec3Val);
-							break;
-						}
-						case  UniformType::Vec4 :
-						{
-							shader.SetUniformVector4(index, uniform.TypeData.vec4Val);
-							break;
-						}
-
-						case  UniformType::Float :
-						{
-							shader.SetUniformFloat(index, uniform.TypeData.floatVal);
-							break;
-						}
-
-						default:
-						{
-							break;
-						}
-					}
-				}
-			}
-		}
-
-	}
 }
 
 void Mesh::UnbindMesh()
 {
-	if (CurrentMaterial.DiffuseTexture)
-	{
-		bool Found = false;
-		Texture & tx = TextureManager::GetTextureManager().GetTextureFromID(CurrentMaterial.DiffuseTexture, Found);
-
-		if (Found)
-		{
-			tx.UnBind();
-		}
-
-		glBindSampler(0, 0);
-	}
 	glBindVertexArray(0);
 }

@@ -4,6 +4,18 @@
 
 bool ShaderManager::CreateShader(const std::string & ShaderProgramName, const std::string & VertexShaderFilename, const std::string & FragmentShaderFilename, size_t & ShaderProgramID)
 {
+	
+	bool FoundShader = false;
+	std::size_t hash = std::hash<std::string>{}(ShaderProgramName);
+	ShaderProgramID = hash;
+
+	GetShader(ShaderProgramID, FoundShader);
+
+	if (FoundShader)
+	{
+		return true;
+	}
+
 	ShaderProgram prg;
 
 	//FIXME : Generating a string for each resource load is TERRIBLE
@@ -24,8 +36,6 @@ bool ShaderManager::CreateShader(const std::string & ShaderProgramName, const st
 
 	prg.LinkProgram();
 
-	std::size_t hash = std::hash<std::string>{}(ShaderProgramName);
-	ShaderProgramID = hash;
 
 	Shaders[hash] = std::move(prg);
 

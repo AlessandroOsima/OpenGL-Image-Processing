@@ -28,7 +28,9 @@ public:
 		glfwGetWindowSize(Context, &info.Width, &info.Height);
 	}
 
+
 private:
 	GLFWwindow * Context;
+
 };
 

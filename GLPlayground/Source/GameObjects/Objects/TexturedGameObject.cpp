@@ -20,17 +20,13 @@ void TexturedGameObject::Start()
 
 	Object::Start();
 
-	Material mt;
-
 	size_t TextureID = 0;
 	
-	if (!TextureManager::GetTextureManager().CreateTexture(TextureName, TextureID))
+	if (!TextureManager::GetTextureManager().CreateTextureFromFile(TextureName, TextureID))
 	{
 		Logger::GetLogger().LogString("Unable to create texture", LogType::ERROR);
 		return;
 	}
-
-	mt.DiffuseTexture = TextureID;
 
 	size_t ShaderProgramId = 0;
 
@@ -40,8 +36,7 @@ void TexturedGameObject::Start()
 		return;
 	}
 
-	mt.Program = ShaderProgramId;
-
+	Material mt(TextureID, ShaderProgramId);
 	//
 
 	std::shared_ptr<Mesh> mesh(new Mesh(
@@ -59,9 +54,7 @@ void TexturedGameObject::Start()
 		2,
 		1,
 		3
-	},
-
-		std::move(mt)
+	}
 	));
 	//
 

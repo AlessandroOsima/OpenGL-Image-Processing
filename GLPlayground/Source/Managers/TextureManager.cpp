@@ -13,7 +13,7 @@ TextureManager::~TextureManager()
 {
 }
 
-bool TextureManager::CreateTexture(const std::string & TextureName, size_t & TextureID)
+bool TextureManager::CreateTextureFromFile(const std::string & TextureName, size_t & TextureID)
 {
 	bool alreadyCreated = false;
 
@@ -32,6 +32,29 @@ bool TextureManager::CreateTexture(const std::string & TextureName, size_t & Tex
 	{
 		return false;
 	}
+
+	std::size_t hash = std::hash<std::string>{}(TextureName);
+	TextureID = hash;
+
+	Textures[hash] = std::move(texture);
+
+	return true;
+}
+
+bool TextureManager::CreateTexture(const std::string & TextureName, uint32_t Width, uint32_t Height, size_t & TextureID)
+{
+	bool alreadyCreated = false;
+
+	GetTextureAndIDFromName(TextureName, alreadyCreated, TextureID);
+
+	if (alreadyCreated)
+	{
+		return true;
+	}
+
+	Texture texture;
+
+	texture.GenerateTextureWithSize(Width, Height);
 
 	std::size_t hash = std::hash<std::string>{}(TextureName);
 	TextureID = hash;
@@ -64,6 +87,21 @@ Texture & TextureManager::GetTextureAndIDFromName(const std::string & TextureNam
 	return GetTextureFromID(hash, Found);
 }
 
+size_t TextureManager::GetIDFromName(const std::string & TextureName, bool & Found)
+{
+	Found = true;
+
+	std::size_t hash = std::hash<std::string>{}(TextureName);
+	std::map<std::size_t, Texture>::iterator it = Textures.find(hash);
+
+	if (it == Textures.end())
+	{
+		Found = false;
+	}
+
+	return hash;
+}
+
 Texture & TextureManager::GetTextureFromName(const std::string & TextureName, bool & Found)
 {
 	Found = true;
@@ -71,4 +109,27 @@ Texture & TextureManager::GetTextureFromName(const std::string & TextureName, bo
 	std::size_t hash = std::hash<std::string>{}(TextureName);
 
 	return GetTextureFromID(hash, Found);
+}
+
+void TextureManager::DestroyTexture(size_t ID)
+{
+	if (!TextureExist(ID))
+	{
+		return;
+	}
+
+	Textures.erase(ID);
+}
+
+bool TextureManager::TextureExist(size_t ID)
+{
+	std::map<std::size_t, Texture>::iterator it = Textures.find(ID);
+
+	if (it == Textures.end())
+	{
+		return false;
+	}
+
+	return true;
+
 }

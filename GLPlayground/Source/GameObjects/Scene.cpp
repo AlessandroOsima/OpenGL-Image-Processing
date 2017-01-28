@@ -19,7 +19,7 @@ Scene::Scene(RenderableScene & RenderScene) : RenderScene(RenderScene)
 
 void Scene::Init()
 {
-
+	/*
 	std::unique_ptr<Object> orginal = std::make_unique<TexturedGameObject>("base", "test.jpg");
 	orginal->SetLogicScene(this);
 	GameObjects.push_back(std::move(orginal));
@@ -74,13 +74,67 @@ void Scene::Init()
 	sharpenedTransform->SetTranslate(glm::translate(glm::mat4(), glm::vec3(sizeX / 2, sizeY / 2, 0)));
 
 	Renderable * sharpenedRenderable = static_cast<Renderable*>(GameObjects[2]->GetComponentOfType(ComponentsType::Renderable));
-	UniformTypeData sharpenedUniformData { Filters::GenerateSharpenMatrix(8) };
+	UniformTypeData sharpenedUniformData { Filters::GenerateSharpenMatrix(9) };
 	UniformsToBind sharpenedUniform{ "Mask", sharpenedUniformData, UniformType::Mat3 };
 	sharpenedRenderable->GetMesh()->AddUniform(sharpenedUniform);
 
 	//MEDIAN
 	Transform * medianTransform = static_cast<Transform*>(GameObjects[3]->GetComponentOfType(ComponentsType::Transform));
 	medianTransform->SetTranslate(glm::translate(glm::mat4(), glm::vec3(sizeX + sizeX / 2, sizeY / 2, 0)));
+	*/
+
+	std::unique_ptr<Object> orginal = std::make_unique<TexturedGameObject>("base", "test.jpg");
+	orginal->SetLogicScene(this);
+	GameObjects.push_back(std::move(orginal));
+
+	for (auto & gameObject : GameObjects)
+	{
+		gameObject->Start();
+	}
+
+	bool Found = false;
+
+	TextureInfo info = TextureManager::GetTextureManager().GetTextureFromName("test.jpg", Found).GetTextureInfo();
+
+	if (!Found)
+	{
+		Logger::GetLogger().LogString("Unable to find texture info for test.jpg", LogType::ERROR);
+		return;
+	}
+
+	size_t textureID = TextureManager::GetTextureManager().GetIDFromName("test.jpg", Found);
+
+	float sizeX = info.Width;
+	float sizeY = info.Height;
+
+	//ORIGINAL
+	Transform * originalTransform = static_cast<Transform*>(GameObjects[0]->GetComponentOfType(ComponentsType::Transform));
+	originalTransform->SetTranslate(glm::translate(glm::mat4(), glm::vec3(sizeX / 2, sizeY / 2, 0)));
+	
+	size_t BaseHash;
+	size_t GrayscaleHash;
+	size_t SobelHash;
+
+	if (ShaderManager::GetShaderManager().CreateShader("base", "base.vs", "base.fs", BaseHash) &&ShaderManager::GetShaderManager().CreateShader("grayscale", "grayscale.vs", "grayscale.fs", GrayscaleHash) && ShaderManager::GetShaderManager().CreateShader("sobel", "sobel.vs", "sobel.fs", SobelHash))
+	{
+		RenderPassGroup passGroup(sizeX, sizeY);
+
+		Material passBaseMaterial{ textureID, BaseHash };
+		RenderPass passBase(passBaseMaterial, false, true);
+		passGroup.RenderPasses.push_back(std::move(passBase));
+
+		Material passGrayMaterial { textureID, GrayscaleHash };
+		RenderPass passGray(passGrayMaterial, false, true);
+		passGroup.RenderPasses.push_back(std::move(passGray));
+
+		Material passSobelMaterial{ textureID, SobelHash };
+		RenderPass passSobel(passSobelMaterial, true, true);
+		passGroup.RenderPasses.push_back(std::move(passSobel));
+
+		Renderable * originalRenderable = static_cast<Renderable*>(GameObjects[0]->GetComponentOfType(ComponentsType::Renderable));
+		originalRenderable->AddPassesOnMesh(std::move(passGroup));
+	}
+
 
 }
 

@@ -15,5 +15,5 @@ vec4 ConvertToGrayscale(in vec4 RGBIn)
 
 void main()
 {
-  color = vec4(texture(diffuseSampler, uvCoords).xyz, 1);
+  color = ConvertToGrayscale(vec4(texture(diffuseSampler, uvCoords).xyz, 1));
 }

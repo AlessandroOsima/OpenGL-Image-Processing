@@ -19,12 +19,14 @@ public:
 
 	bool LoadFromFile(const std::string & ImageFile);
 
-	inline TextureID GetID()
+	void GenerateTextureWithSize(uint32_t Width, uint32_t Height);
+
+	inline TextureID GetID() const
 	{
 		return ID;
 	}
 
-	inline const TextureInfo & GetTextureInfo()
+	inline const TextureInfo & GetTextureInfo() const
 	{
 		return Info;
 	}

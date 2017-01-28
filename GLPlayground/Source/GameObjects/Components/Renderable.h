@@ -4,6 +4,7 @@
 #include <memory>
 #include "Renderer/RenderableScene.h"
 #include "GameObjects/Scene.h"
+#include "Renderer/RenderPass.h"
 
 class Scene;
 
@@ -47,16 +48,7 @@ public:
 		MeshIsRendering = true;
 	}
 
-
-	inline const Material * GetCurrentMeshMaterial() const
-	{
-		if (Mesh)
-		{
-			return & Mesh->GetMaterial();
-		}
-
-		return nullptr;
-	}
+	void AddPassesOnMesh(RenderPassGroup && PassGroup);
 
 	inline bool HasMesh()
 	{

@@ -19,6 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Renderer\Material.cpp" />
+    <ClCompile Include="Source\Renderer\RenderPass.cpp" />
+    <ClCompile Include="Source\Renderer\Framebuffer.cpp" />
     <ClCompile Include="Source\Math\Filters.cpp" />
     <ClCompile Include="Source\GameObjects\Component.cpp" />
     <ClCompile Include="Source\GameObjects\Components\Renderable.cpp" />
@@ -39,6 +42,10 @@
     <ClCompile Include="Source\Managers\TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Libs\stb\stb_image_write.h" />
+    <ClInclude Include="Source\Renderer\Material.h" />
+    <ClInclude Include="Source\Renderer\RenderPass.h" />
+    <ClInclude Include="Source\Renderer\Framebuffer.h" />
     <ClInclude Include="Source\Math\Filters.h" />
     <ClInclude Include="Source\GameObjects\Component.h" />
     <ClInclude Include="Source\GameObjects\Components\Renderable.h" />
@@ -57,6 +64,7 @@
     <ClInclude Include="Source\Renderer\ShaderProgram.h" />
     <ClInclude Include="Source\Renderer\Texture.h" />
     <ClInclude Include="Libs\stb\stb_image.h" />
+    <ClInclude Include="Source\Renderer\Uniform.h" />
     <ClInclude Include="Source\stdafx.h" />
     <ClInclude Include="Source\targetver.h" />
     <ClInclude Include="Source\GameObjects\Objects\TexturedGameObject.h" />

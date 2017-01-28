@@ -5,45 +5,16 @@
 #include "Renderer/Texture.h"
 #include "Renderer/ShaderProgram.h"
 #include <memory>
+#include "Renderer/Material.h"
+#include "Renderer/Uniform.h"
 
 using Index = uint32_t;
-
-struct Material
-{
-	size_t DiffuseTexture = 0;
-	size_t Program = 0; 
-};
-
-union UniformTypeData
-{
-	glm::mat3 mat3Val;
-	glm::mat4 mat4Val;
-	glm::vec4 vec4Val;
-	glm::vec3 vec3Val;
-	float floatVal;
-};
-
-enum class UniformType
-{
-	Mat4,
-	Mat3,
-	Vec4,
-	Vec3,
-	Float
-};
-
-struct UniformsToBind
-{
-    std::string UniformName;
-	UniformTypeData TypeData;
-	UniformType Type;
-};
 
 
 class Mesh
 {
 public:
-	Mesh(const std::vector<Vertex> & Vertices, const std::vector<Index> & Indices, Material && MaterialToUse);
+	Mesh(const std::vector<Vertex> & Vertices, const std::vector<Index> & Indices);
 	~Mesh();
 
 	void GenerateMeshData();
@@ -71,38 +42,14 @@ public:
 		return Model;
 	}
 
-	inline const Material & GetMaterial()
-	{
-		return CurrentMaterial;
-	}
-
-	inline unsigned int AddUniform(const UniformsToBind & Uniform)
-	{
-		Uniforms.push_back(Uniform);
-		return Uniforms.size() - 1;
-	}
-
-	inline UniformsToBind * GetUniform(unsigned int Index)
-	{
-		if (Index < Uniforms.size())
-		{
-			return &Uniforms[Index];
-		}
-
-		return nullptr;
-	}
-
 
 private:
-	std::vector<UniformsToBind> Uniforms;
 	std::vector<Vertex> Vertices;
 	std::vector<Index> Indices;
-	Material CurrentMaterial;
 	glm::mat4 Model;
 
 	GLuint VBO;
 	GLuint VEO;
 	GLuint VAO;
-	GLuint DiffuseSampler = -1;
 };
 

@@ -45,7 +45,7 @@ int main()
 	}
 
 
-	WindowInfo windowInfo{ 1434, 944 };
+	WindowInfo windowInfo{ 717, 472 };
 	GLFWwindow * window = CreateWindow(windowInfo, "OpenGL Renderer - Filtering");
 
 	if (!window)
