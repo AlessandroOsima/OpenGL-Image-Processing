@@ -13,8 +13,8 @@ struct Material
 	Material(size_t DiffuseTexture, size_t Program);
 	~Material();
 
-	void Init();
-	void DeInit();
+	void CreateObjects();
+	void RemoveObjects();
 
 private:
 	GLuint DiffuseSampler;

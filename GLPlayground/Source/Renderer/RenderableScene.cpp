@@ -6,7 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 
-RenderableScene::RenderableScene(GLRenderer & Renderer) : Renderer(Renderer)
+RenderableScene::RenderableScene(GLRenderer & Renderer) : Renderer(Renderer), BaseMaterial(0,0)
 {
 }
 
@@ -43,13 +43,16 @@ void RenderableScene::Initialize()
 		glNamedBufferSubData(UniformMatricesBufferID, sizeof(glm::mat4), sizeof(glm::mat4), &CurrentView);
 	};
 
-
-
-	/*TextureManager::GetTextureManager().CreateTexture("OffscreenColorAttachment", info.Width, info.Height, OffscreenFBColorAttachment);
-	bool found = false;
-	OffscreenFramebuffer.BindTextureToFramebuffer(TextureManager::GetTextureManager().GetTextureFromID(OffscreenFBColorAttachment, found), FrameBufferAttachmentType::COLOR);
-	
-	OffscreenFramebuffer.BindFramebuffer();*/
+	size_t baseShaderHash;
+	if (ShaderManager::GetShaderManager().CreateShader("base", "base.vs", "base.fs", baseShaderHash))
+	{
+		BaseMaterial = { 0, baseShaderHash };
+		BaseMaterial.CreateObjects();
+	}
+	else
+	{
+		Logger::GetLogger().LogString("Unable to create base material for Renderable Scene", LogType::ERROR);
+	}
 }
 
 void RenderableScene::RenderScene()
@@ -122,11 +125,37 @@ void RenderableScene::RenderScene()
 
 				if (group.RenderPasses[i].RenderOnMainFramebuffer)
 				{
-					OffscreenFramebuffer.UnBindFramebuffer();
+
+					/*OffscreenFramebuffer.UnBindFramebuffer();
 
 					OffscreenFramebuffer.BindFramebuffer(FramebufferBindType::READ);
 
 					glBlitFramebuffer(0, 0, colorTarget.GetTextureInfo().Width, colorTarget.GetTextureInfo().Height, 0, 0, colorTarget.GetTextureInfo().Width, colorTarget.GetTextureInfo().Height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+					*/
+
+					OffscreenFramebuffer.UnbindFramebufferAttachment(FrameBufferAttachmentType::COLOR);
+					OffscreenFramebuffer.UnBindFramebuffer();
+
+					WindowInfo info;
+					Renderer.GetCurrentWindowInfo(info);
+
+					glViewport(0, 0, info.Width, info.Height);
+
+					mesh.Mesh->BindMesh();
+
+					BaseMaterial.DiffuseTexture = attachmentTexture;
+					BaseMaterial.Bind();
+					
+
+					glNamedBufferSubData(UniformMatricesBufferID, 0, sizeof(glm::mat4), &CurrentProjection);
+					glNamedBufferSubData(UniformMatricesBufferID, sizeof(glm::mat4), sizeof(glm::mat4), &CurrentView);
+					glNamedBufferSubData(UniformMatricesBufferID, sizeof(glm::mat4) * 2, sizeof(glm::mat4), &mesh.Mesh->GetModel());
+
+					Renderer.DrawMesh(*mesh.Mesh);
+
+					BaseMaterial.UnBind();
+					mesh.Mesh->UnbindMesh();
+				
 				}
 			}
 
@@ -142,7 +171,7 @@ void RenderableScene::RenderScene()
 
 void RenderableScene::DeInitialize()
 {
-
+	BaseMaterial.RemoveObjects();
 }
 
 RenderableMeshLocation RenderableScene::AddMesh(std::shared_ptr<Mesh> MeshToAdd)

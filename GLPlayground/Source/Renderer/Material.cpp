@@ -44,12 +44,12 @@ Material::~Material()
 
 }
 
-void Material::Init()
+void Material::CreateObjects()
 {
 	glCreateSamplers(1, &DiffuseSampler);
 }
 
-void Material::DeInit()
+void Material::RemoveObjects()
 {
 	glDeleteSamplers(1, &DiffuseSampler);
 }

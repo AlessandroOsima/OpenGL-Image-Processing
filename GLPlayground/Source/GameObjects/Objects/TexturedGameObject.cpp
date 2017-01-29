@@ -10,7 +10,7 @@
 #include "GameObjects/Objects/TexturedGameObject.h"
 #include <glm/gtc/matrix_transform.hpp>
 
-TexturedGameObject::TexturedGameObject(const std::string & ShaderName, const std::string & TextureName) : ShaderName(ShaderName), TextureName(TextureName)
+TexturedGameObject::TexturedGameObject()
 {
 
 }
@@ -19,24 +19,6 @@ void TexturedGameObject::Start()
 {
 
 	Object::Start();
-
-	size_t TextureID = 0;
-	
-	if (!TextureManager::GetTextureManager().CreateTextureFromFile(TextureName, TextureID))
-	{
-		Logger::GetLogger().LogString("Unable to create texture", LogType::ERROR);
-		return;
-	}
-
-	size_t ShaderProgramId = 0;
-
-	if (!ShaderManager::GetShaderManager().CreateShader(ShaderName, ShaderName + ".vs", ShaderName + ".fs", ShaderProgramId))
-	{
-		Logger::GetLogger().LogString("Unable to create shader", LogType::ERROR);
-		return;
-	}
-
-	Material mt(TextureID, ShaderProgramId);
 	//
 
 	std::shared_ptr<Mesh> mesh(new Mesh(
@@ -64,13 +46,6 @@ void TexturedGameObject::Start()
 	rend->SetMesh(mesh);
 
 	ComponentLocation transfLoc = AddComponent(std::make_unique<Transform>());
-
-	Transform* transf = static_cast<Transform*>(GetComponentAtLocation(transfLoc));
-
-	bool Found = false;
-	Texture & tx = TextureManager::GetTextureManager().GetTextureFromID(TextureID, Found);
-
-	transf->SetScale(glm::scale(glm::mat4(), glm::vec3(tx.GetTextureInfo().Width / 2, tx.GetTextureInfo().Height / 2, 1.f)));
 }
 
 void TexturedGameObject::Update(float DeltaTime)

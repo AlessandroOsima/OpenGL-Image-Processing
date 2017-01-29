@@ -70,12 +70,12 @@ void RenderPass::BindUniforms()
 
 void RenderPass::Init()
 {
-	CurrentMaterial.Init();
+	CurrentMaterial.CreateObjects();
 }
 
 void RenderPass::DeInit()
 {
-	CurrentMaterial.DeInit();
+	CurrentMaterial.RemoveObjects();
 }
 
 RenderPassGroup::RenderPassGroup(float OffscreenTextureWidth, float OffscreenTextureHeight) : OffscreenTextureWidth(OffscreenTextureWidth), OffscreenTextureHeight(OffscreenTextureHeight)

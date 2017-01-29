@@ -74,5 +74,7 @@ private:
 
 	Framebuffer OffscreenFramebuffer;
 	size_t OffscreenFBColorAttachment;
+
+	Material BaseMaterial;
 };
 
