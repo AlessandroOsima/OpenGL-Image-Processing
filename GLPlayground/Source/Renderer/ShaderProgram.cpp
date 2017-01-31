@@ -111,10 +111,10 @@ bool ShaderProgram::CompileShader(const std::string & ShaderFilename, ShaderType
 
 	glGetShaderiv(CompiledID, GL_COMPILE_STATUS, &compilationSuccess);
 
-	GLint logSize;
+	GLint logSize = 0;
 	glGetShaderiv(CompiledID, GL_INFO_LOG_LENGTH, &logSize);
 
-	if (logSize)
+	if (logSize > 1)
 	{
 		char * logMessage = new char[logSize];
 
@@ -122,7 +122,7 @@ bool ShaderProgram::CompileShader(const std::string & ShaderFilename, ShaderType
 
 		std::stringstream stream;
 		stream << "Shader " << CompiledID << " compile log: \n" << logMessage << std::ends;
-		Logger::GetLogger().LogString(stream.str(), ERROR);
+		Logger::GetLogger().LogString(stream.str(), LOG);
 
 		delete logMessage;
 	}
@@ -151,7 +151,7 @@ void ShaderProgram::LinkProgram()
 	GLint logSize;
 	glGetProgramiv(ProgramID, GL_INFO_LOG_LENGTH, &logSize);
 
-	if (logSize)
+	if (logSize > 1)
 	{
 		char * logMessage = new char[logSize];
 
