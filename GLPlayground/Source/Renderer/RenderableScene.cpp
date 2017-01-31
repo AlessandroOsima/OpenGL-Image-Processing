@@ -93,8 +93,6 @@ void RenderableScene::RenderScene()
 
 				mesh.Mesh->BindMesh();
 
-				//We should load the proper attachment texture here
-
 				if (group.RenderPasses[i].UsePreviousPassAsAttachment)
 				{
 					original = group.RenderPasses[i].GetMaterial().DiffuseTexture;
@@ -163,8 +161,6 @@ void RenderableScene::RenderScene()
 			OffscreenFramebuffer.UnBindFramebuffer();
 		}
 	}
-
-	//Render on window framebuffer 
 
 	Renderer.Present();
 }

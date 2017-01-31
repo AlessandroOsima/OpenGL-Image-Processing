@@ -47,3 +47,14 @@ glm::mat3 Filters::GenerateHighBoost(float BoostFactor)
 
 	return Weight;
 }
+
+glm::mat3 Filters::GenerateLaplacian()
+{
+	glm::mat3  Weight(1.f);
+
+	Weight[0] = { 0,  -1, 0 };
+	Weight[1] = { -1, 4, -1 };
+	Weight[2] = { 0,  -1, 0 };
+
+	return Weight;
+}

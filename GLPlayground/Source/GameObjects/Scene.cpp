@@ -87,9 +87,17 @@ void Scene::Init()
 	orginal->SetLogicScene(this);
 	GameObjects.push_back(std::move(orginal));
 
-	std::unique_ptr<Object> filtered = std::make_unique<TexturedGameObject>();
-	filtered->SetLogicScene(this);
-	GameObjects.push_back(std::move(filtered));
+	std::unique_ptr<Object> sharpen = std::make_unique<TexturedGameObject>();
+	sharpen->SetLogicScene(this);
+	GameObjects.push_back(std::move(sharpen));
+
+	std::unique_ptr<Object> smooth = std::make_unique<TexturedGameObject>();
+	smooth->SetLogicScene(this);
+	GameObjects.push_back(std::move(smooth));
+
+	std::unique_ptr<Object> sobel = std::make_unique<TexturedGameObject>();
+	sobel->SetLogicScene(this);
+	GameObjects.push_back(std::move(sobel));
 
 	for (auto & gameObject : GameObjects)
 	{
@@ -113,13 +121,27 @@ void Scene::Init()
 
 	//ORIGINAL
 	Transform * originalTransform = static_cast<Transform*>(GameObjects[0]->GetComponentOfType(ComponentsType::Transform));
-	originalTransform->SetTranslate(glm::translate(glm::mat4(), glm::vec3(sizeX / 4, sizeY / 2, 0)));
+	originalTransform->SetTranslate(glm::translate(glm::mat4(), glm::vec3(sizeX / 4, sizeY / 2 + sizeY / 4 , 0)));
 
 	originalTransform->SetScale(glm::scale(glm::mat4(), glm::vec3(info.Width / 4, info.Height / 4, 1.f)));
 
+	//SHARPEN
+
+	Transform * sharpenTransform = static_cast<Transform*>(GameObjects[1]->GetComponentOfType(ComponentsType::Transform));
+	sharpenTransform->SetTranslate(glm::translate(glm::mat4(), glm::vec3(sizeX / 4 + sizeX / 2, sizeY / 2 + sizeY / 4, 0)));
+
+	sharpenTransform->SetScale(glm::scale(glm::mat4(), glm::vec3(info.Width / 4, info.Height / 4, 1.f)));
+
+	//SMOOTH
+
+	Transform * smoothTransform = static_cast<Transform*>(GameObjects[2]->GetComponentOfType(ComponentsType::Transform));
+	smoothTransform->SetTranslate(glm::translate(glm::mat4(), glm::vec3(sizeX / 4, sizeY / 4, 0)));
+
+	smoothTransform->SetScale(glm::scale(glm::mat4(), glm::vec3(info.Width / 4, info.Height / 4, 1.f)));
+
 	//FILTERED
-	Transform * filteredTransform = static_cast<Transform*>(GameObjects[1]->GetComponentOfType(ComponentsType::Transform));
-	filteredTransform->SetTranslate(glm::translate(glm::mat4(), glm::vec3(sizeX / 4 + sizeX / 2, sizeY / 2, 0)));
+	Transform * filteredTransform = static_cast<Transform*>(GameObjects[3]->GetComponentOfType(ComponentsType::Transform));
+	filteredTransform->SetTranslate(glm::translate(glm::mat4(), glm::vec3(sizeX / 4 + sizeX / 2, sizeY / 4, 0)));
 
 	filteredTransform->SetScale(glm::scale(glm::mat4(), glm::vec3(info.Width / 4, info.Height / 4, 1.f)));
 
@@ -132,44 +154,78 @@ void Scene::Init()
 	if (ShaderManager::GetShaderManager().CreateShader("base", "base.vs", "base.fs", BaseHash) && ShaderManager::GetShaderManager().CreateShader("grayscale", "grayscale.vs", "grayscale.fs", GrayscaleHash) && ShaderManager::GetShaderManager().CreateShader("box", "box.vs", "box.fs", BoxHash) &&  ShaderManager::GetShaderManager().CreateShader("sobel", "sobel.vs", "sobel.fs", SobelHash))
 	{
 
-		RenderPassGroup originalPassGroup(sizeX, sizeY);
+		{
+			RenderPassGroup originalPassGroup(sizeX, sizeY);
 
-		Material passBaseMaterial{ textureID, BaseHash };
-		RenderPass passBase(passBaseMaterial, true, true);
-		originalPassGroup.RenderPasses.push_back(std::move(passBase));
+			Material passBaseMaterial{ textureID, BaseHash };
+			RenderPass passBase(passBaseMaterial, true, true);
+			originalPassGroup.RenderPasses.push_back(std::move(passBase));
 
-		Renderable * originalRenderable = static_cast<Renderable*>(GameObjects[0]->GetComponentOfType(ComponentsType::Renderable));
-		originalRenderable->AddPassesOnMesh(std::move(originalPassGroup));
+			Renderable * originalRenderable = static_cast<Renderable*>(GameObjects[0]->GetComponentOfType(ComponentsType::Renderable));
+			originalRenderable->AddPassesOnMesh(std::move(originalPassGroup));
+		}
 
+		{
+			RenderPassGroup sharpenPassGroup(sizeX, sizeY);
 
+			Material passGrayMaterial{ textureID, GrayscaleHash };
+			RenderPass passGray(passGrayMaterial, false, true);
+			sharpenPassGroup.RenderPasses.push_back(std::move(passGray));
 
-		RenderPassGroup passGroup(sizeX, sizeY);
+			Material passSharpMaterial{ textureID, BoxHash };
+			RenderPass passSharp(passSharpMaterial, true, true);
+			UniformTypeData sharpUniformData{ Filters::GenerateSharpenMatrix(9) };
+			UniformsToBind sharpUniform{ "Mask", sharpUniformData, UniformType::Mat3 };
+			passSharp.AddUniform(sharpUniform);
 
-		Material passGrayMaterial{ textureID, GrayscaleHash };
-		RenderPass passGray(passGrayMaterial, false, true);
-		passGroup.RenderPasses.push_back(std::move(passGray));
+			sharpenPassGroup.RenderPasses.push_back(std::move(passSharp));
 
-		Material passSmoothMaterial{ textureID, BoxHash };
-		RenderPass passSmooth(passSmoothMaterial, false, true);
-		UniformTypeData smoothUniformData{ Filters::GenerateSmoothingMatrix() };
-		UniformsToBind smoothUniform{ "Mask", smoothUniformData, UniformType::Mat3 };
-		passSmooth.AddUniform(smoothUniform);
-		passGroup.RenderPasses.push_back(std::move(passSmooth));
+			Renderable * sharpenRenderable = static_cast<Renderable*>(GameObjects[1]->GetComponentOfType(ComponentsType::Renderable));
+			sharpenRenderable->AddPassesOnMesh(std::move(sharpenPassGroup));
+		} 
+		
+		{
+			RenderPassGroup passGroup(sizeX, sizeY);
 
-		Material passSharpenMaterial{ textureID, BoxHash };
-		RenderPass passSharpen(passSharpenMaterial, false, true);
-		UniformTypeData sharpenUniformData{ Filters::GenerateSharpenMatrix(8) };
-		UniformsToBind sharpenUniform{ "Mask", sharpenUniformData, UniformType::Mat3 };
-		passSharpen.AddUniform(sharpenUniform);
-		passGroup.RenderPasses.push_back(std::move(passSharpen));
+			Material passSmoothMaterial{ textureID, BoxHash };
+			RenderPass passSmooth(passSmoothMaterial, true, true);
+			UniformTypeData smoothUniformData{ Filters::GenerateSmoothingMatrix() };
+			UniformsToBind smoothUniform{ "Mask", smoothUniformData, UniformType::Mat3 };
+			passSmooth.AddUniform(smoothUniform);
+			passGroup.RenderPasses.push_back(std::move(passSmooth));
 
-		Material passSobelMaterial{ textureID, SobelHash };
-		RenderPass passSobel(passSobelMaterial, true, true);
-		passGroup.RenderPasses.push_back(std::move(passSobel));
+			Renderable * renderable = static_cast<Renderable*>(GameObjects[2]->GetComponentOfType(ComponentsType::Renderable));
+			renderable->AddPassesOnMesh(std::move(passGroup));
+		}
 
-		Renderable * filteredRenderable = static_cast<Renderable*>(GameObjects[1]->GetComponentOfType(ComponentsType::Renderable));
-		filteredRenderable->AddPassesOnMesh(std::move(passGroup));
+		{
+			RenderPassGroup passGroup(sizeX, sizeY);
 
+			Material passGrayMaterial{ textureID, GrayscaleHash };
+			RenderPass passGray(passGrayMaterial, false, true);
+			passGroup.RenderPasses.push_back(std::move(passGray));
+
+			Material passSmoothMaterial{ textureID, BoxHash };
+			RenderPass passSmooth(passSmoothMaterial, false, true);
+			UniformTypeData smoothUniformData{ Filters::GenerateSmoothingMatrix() };
+			UniformsToBind smoothUniform{ "Mask", smoothUniformData, UniformType::Mat3 };
+			passSmooth.AddUniform(smoothUniform);
+			passGroup.RenderPasses.push_back(std::move(passSmooth));
+
+			Material passSharpenMaterial{ textureID, BoxHash };
+			RenderPass passSharpen(passSharpenMaterial, false, true);
+			UniformTypeData sharpenUniformData{ Filters::GenerateSharpenMatrix(8) };
+			UniformsToBind sharpenUniform{ "Mask", sharpenUniformData, UniformType::Mat3 };
+			passSharpen.AddUniform(sharpenUniform);
+			passGroup.RenderPasses.push_back(std::move(passSharpen));
+
+			Material passSobelMaterial{ textureID, SobelHash };
+			RenderPass passSobel(passSobelMaterial, true, true);
+			passGroup.RenderPasses.push_back(std::move(passSobel));
+
+			Renderable * filteredRenderable = static_cast<Renderable*>(GameObjects[3]->GetComponentOfType(ComponentsType::Renderable));
+			filteredRenderable->AddPassesOnMesh(std::move(passGroup));
+		}
 	}
 
 
