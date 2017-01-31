@@ -1,1 +1,1 @@
-GLPlayground
+An OpenGL application implementing image filters on textures. Each filter is implemented in a fragment shader and the application supports multipass rendering to apply a chain of filters on the same texture. Currently Median, Sobel, Sharpen and Sharpen filters are implemented.
