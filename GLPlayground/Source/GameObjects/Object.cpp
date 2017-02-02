@@ -12,7 +12,7 @@ Object::~Object()
 {
 }
 
-unsigned int Object::AddComponent(std::unique_ptr<Component> && ComponentToAdd)
+size_t Object::AddComponent(std::unique_ptr<Component> && ComponentToAdd)
 {
 	Components.push_back(std::move(ComponentToAdd));
 	ComponentLocation loc = Components.size() - 1;
@@ -36,7 +36,7 @@ void Object::RemoveComponent(ComponentLocation Location)
 	Components.erase(Components.begin() + Location);
 }
 
-unsigned int Object::GetLocation(const std::unique_ptr<Component> & ComponentToLocate)
+size_t Object::GetLocation(const std::unique_ptr<Component> & ComponentToLocate)
 {
 	std::vector<std::unique_ptr<Component>>::iterator location = std::find(Components.begin(), Components.end(), ComponentToLocate);
 	return  location - Components.begin();

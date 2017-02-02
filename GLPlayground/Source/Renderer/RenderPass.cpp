@@ -79,7 +79,7 @@ void RenderPass::DeInit()
 	CurrentMaterial.RemoveObjects();
 }
 
-RenderPassGroup::RenderPassGroup(float OffscreenTextureWidth, float OffscreenTextureHeight) : OffscreenTextureWidth(OffscreenTextureWidth), OffscreenTextureHeight(OffscreenTextureHeight)
+RenderPassGroup::RenderPassGroup(uint32_t OffscreenTextureWidth, uint32_t OffscreenTextureHeight) : OffscreenTextureWidth(OffscreenTextureWidth), OffscreenTextureHeight(OffscreenTextureHeight)
 {
 
 }

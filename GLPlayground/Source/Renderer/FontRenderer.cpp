@@ -25,7 +25,7 @@ void FontRenderer::Init(const std::string & FontName)
 		Logger::GetLogger().LogString(stream.str(), LogType::ERROR);
 	}
 
-	int size = file.tellg();
+	std::streamoff size = file.tellg();
 
 	file.seekg(0, file.beg);
 

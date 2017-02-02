@@ -3,7 +3,7 @@
 #include <memory>
 #include "GameObjects/Component.h"
 
-using ComponentLocation = unsigned int;
+using ComponentLocation = size_t;
 class Scene;
 
 class Object
@@ -12,10 +12,10 @@ public:
 	Object();
 	virtual ~Object();
 
-	unsigned int AddComponent(std::unique_ptr<Component> && ComponentToAdd);
+	size_t AddComponent(std::unique_ptr<Component> && ComponentToAdd);
 	void RemoveComponent(ComponentLocation Location);
 
-	unsigned int GetLocation(const std::unique_ptr<Component> & ComponentToLocate);
+	size_t GetLocation(const std::unique_ptr<Component> & ComponentToLocate);
 	Component * GetComponentAtLocation(ComponentLocation Location);
 
 	std::vector<Component *> GetComponentsOfType(ComponentsType Type);

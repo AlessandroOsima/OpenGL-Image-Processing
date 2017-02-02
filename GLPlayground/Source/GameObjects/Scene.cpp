@@ -117,8 +117,8 @@ void Scene::Init()
 
 	TextureInfo info = TextureManager::GetTextureManager().GetTextureFromID(textureID, Found).GetTextureInfo();
 
-	float sizeX = info.Width;
-	float sizeY = info.Height;
+	int sizeX = info.Width;
+	int sizeY = info.Height;
 
 	//ORIGINAL
 	Transform * originalTransform = static_cast<Transform*>(GameObjects[0]->GetComponentOfType(ComponentsType::Transform));

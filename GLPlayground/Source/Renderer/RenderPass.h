@@ -17,7 +17,7 @@ public:
 		return CurrentMaterial;
 	}
 
-	inline unsigned int AddUniform(const UniformsToBind & Uniform)
+	inline size_t AddUniform(const UniformsToBind & Uniform)
 	{
 		Uniforms.push_back(Uniform);
 		return Uniforms.size() - 1;
@@ -51,7 +51,7 @@ class RenderPassGroup
 {
 
 public:
-	RenderPassGroup(float OffscreenTextureWidth, float OffscreenTextureHeight);
+	RenderPassGroup(uint32_t OffscreenTextureWidth, uint32_t OffscreenTextureHeight);
 
 	std::vector<RenderPass> RenderPasses;
 
@@ -70,8 +70,8 @@ public:
 
 private:
 
-	float OffscreenTextureWidth;
-	float OffscreenTextureHeight;
+	uint32_t OffscreenTextureWidth;
+	uint32_t OffscreenTextureHeight;
 	size_t OffscreenTexture;
 	size_t AttachmentTexture;
 
