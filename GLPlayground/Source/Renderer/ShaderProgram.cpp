@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "ShaderProgram.h"
 #include "Renderer/GLUtilities.h"
 #include <strstream>
@@ -122,7 +123,7 @@ bool ShaderProgram::CompileShader(const std::string & ShaderFilename, ShaderType
 
 		std::stringstream stream;
 		stream << "Shader " << CompiledID << " compile log: \n" << logMessage << std::ends;
-		Logger::GetLogger().LogString(stream.str(), LOG);
+		Logger::GetLogger().LogString(stream.str(), LogType::LOG);
 
 		delete logMessage;
 	}
@@ -146,7 +147,7 @@ void ShaderProgram::LinkProgram()
 
 	std::stringstream stream;
 	stream << "Shader " << ProgramID << " link result is : " << linkSuccess << std::ends;
-	Logger::GetLogger().LogString(stream.str(), LOG);
+	Logger::GetLogger().LogString(stream.str(), LogType::LOG);
 
 	GLint logSize;
 	glGetProgramiv(ProgramID, GL_INFO_LOG_LENGTH, &logSize);
@@ -159,7 +160,7 @@ void ShaderProgram::LinkProgram()
 
 		stream.clear();
 		stream << "Shader " << ProgramID << " link log: \n" << logMessage << std::ends;
-		Logger::GetLogger().LogString(stream.str(), LOG);
+		Logger::GetLogger().LogString(stream.str(), LogType::LOG);
 
 		delete logMessage;
 	}

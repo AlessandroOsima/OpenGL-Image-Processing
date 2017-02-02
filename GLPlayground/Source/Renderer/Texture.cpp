@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Texture.h"
 #include <GL/glew.h>
 #include "GLUtilities.h"
@@ -41,7 +42,7 @@ bool Texture::LoadFromFile(const std::string & ImageFile)
 	return true;
 }
 
-void Texture::GenerateTextureWithSize(uint32_t Width, uint32_t Height)
+void Texture::GenerateTextureWithSize(uint32_t Width, uint32_t Height, unsigned int Format)
 {
 	assert(Width);
 	assert(Height);
@@ -50,7 +51,16 @@ void Texture::GenerateTextureWithSize(uint32_t Width, uint32_t Height)
 	Info.Height = Height;
 
 	glCreateTextures(GL_TEXTURE_2D, 1, &ID);
-	glTextureStorage2D(ID, 1, GL_RGBA8, Width, Height);
+	glTextureStorage2D(ID, 1, Format, Width, Height);
+}
+
+
+
+void Texture::SetImageData(unsigned int Level, int OffsetX, int OffsetY, int Width, int Height, unsigned int Format, unsigned int Type, void * Data)
+{
+	assert(Data);
+
+	glCheckFunction(glTextureSubImage2D(ID, Level, OffsetX, OffsetY, Width, Height, Format, Type, Data));
 }
 
 void Texture::Bind()

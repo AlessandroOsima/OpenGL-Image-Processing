@@ -1,7 +1,10 @@
+#include "stdafx.h"
+#include <GL/glew.h>
 #include "TextureManager.h"
 #include <memory>
 #include <string>
 #include "Managers/ResourceManager.h"
+
 
 
 TextureManager::TextureManager()
@@ -41,7 +44,7 @@ bool TextureManager::CreateTextureFromFile(const std::string & TextureName, size
 	return true;
 }
 
-bool TextureManager::CreateTexture(const std::string & TextureName, uint32_t Width, uint32_t Height, size_t & TextureID)
+bool TextureManager::CreateTexture(const std::string & TextureName, unsigned int Format, uint32_t Width, uint32_t Height, size_t & TextureID)
 {
 	bool alreadyCreated = false;
 
@@ -54,7 +57,7 @@ bool TextureManager::CreateTexture(const std::string & TextureName, uint32_t Wid
 
 	Texture texture;
 
-	texture.GenerateTextureWithSize(Width, Height);
+	texture.GenerateTextureWithSize(Width, Height, Format);
 
 	std::size_t hash = std::hash<std::string>{}(TextureName);
 	TextureID = hash;

@@ -19,7 +19,9 @@ public:
 
 	bool LoadFromFile(const std::string & ImageFile);
 
-	void GenerateTextureWithSize(uint32_t Width, uint32_t Height);
+	void GenerateTextureWithSize(uint32_t Width, uint32_t Height, unsigned int Format);
+
+	void SetImageData(unsigned int Level, int OffsetX, int OffsetY, int Width, int Height, unsigned int Format, unsigned int Type, void * Data);
 
 	inline TextureID GetID() const
 	{

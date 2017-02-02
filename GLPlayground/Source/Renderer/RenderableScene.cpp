@@ -1,10 +1,10 @@
+#include "stdafx.h"
 #include "RenderableScene.h"
 #include "Managers/ShaderManager.h"
 #include "Managers/TextureManager.h"
 #include <limits>
 #include "GLUtilities.h"
 #include <glm/gtc/matrix_transform.hpp>
-
 
 RenderableScene::RenderableScene(GLRenderer & Renderer) : Renderer(Renderer), BaseMaterial(0,0)
 {
@@ -53,6 +53,8 @@ void RenderableScene::Initialize()
 	{
 		Logger::GetLogger().LogString("Unable to create base material for Renderable Scene", LogType::ERROR);
 	}
+
+	DummyFontRenderer.Init("FreeSans.ttf");
 }
 
 void RenderableScene::RenderScene()
@@ -162,11 +164,14 @@ void RenderableScene::RenderScene()
 		}
 	}
 
+	DummyFontRenderer.Render();
+
 	Renderer.Present();
 }
 
 void RenderableScene::DeInitialize()
 {
+	DummyFontRenderer.DeInit();
 	BaseMaterial.RemoveObjects();
 }
 

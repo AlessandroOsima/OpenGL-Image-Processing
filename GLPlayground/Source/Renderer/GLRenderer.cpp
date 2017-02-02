@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "GLRenderer.h"
 #include <assert.h>
 #include <sstream>

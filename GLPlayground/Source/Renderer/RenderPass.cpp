@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "RenderPass.h"
 #include <sstream>
 
@@ -87,13 +88,13 @@ void RenderPassGroup::Init()
 {
 	static std::string AttachmentTextureName = "StaticPassAttachment";
 
-	TextureManager::GetTextureManager().CreateTexture(AttachmentTextureName, OffscreenTextureWidth, OffscreenTextureHeight, AttachmentTexture);
+	TextureManager::GetTextureManager().CreateTexture(AttachmentTextureName, GL_RGBA8, OffscreenTextureWidth, OffscreenTextureHeight, AttachmentTexture);
 	
 	//TODO : this is terrible
 	static int ID = 0;
 	std::stringstream stream;
 	stream << "PassGroupOffscrenResult" << ID << std::ends;
-	TextureManager::GetTextureManager().CreateTexture(stream.str(), OffscreenTextureWidth, OffscreenTextureHeight, OffscreenTexture);
+	TextureManager::GetTextureManager().CreateTexture(stream.str(), GL_RGBA8, OffscreenTextureWidth, OffscreenTextureHeight, OffscreenTexture);
 	ID++;
 
 	for (auto & pass : RenderPasses)

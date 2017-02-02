@@ -18,8 +18,14 @@ public:
 		return Textures;
 	}
 
+	static const std::string & GetFontsFolder()
+	{
+		return Fonts;
+	}
+
 private:
 	static const std::string Shaders;
 	static const std::string Textures;
+	static const std::string Fonts;
 };
 

@@ -1,10 +1,12 @@
 #pragma once
+#include "Renderer/FontRenderer.h"
 #include "Renderer/Mesh.h"
 #include <memory>
 #include "Renderer/GLRenderer.h"
 #include "Renderer/Framebuffer.h"
 #include "Renderer/RenderPass.h"
 #include <limits>
+
 
 using RenderableMeshLocation = uint64_t;
 using RenderablPassLocation = uint64_t;
@@ -76,5 +78,7 @@ private:
 	size_t OffscreenFBColorAttachment;
 
 	Material BaseMaterial;
+
+	FontRenderer DummyFontRenderer;
 };
 

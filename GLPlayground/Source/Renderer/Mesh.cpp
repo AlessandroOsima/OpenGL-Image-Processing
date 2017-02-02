@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Mesh.h"
 #include "Managers/ShaderManager.h"
 #include "Managers/TextureManager.h"

@@ -2,7 +2,7 @@
 #include <string>
 #include <fstream>
 
-enum LogType
+enum class LogType : uint8_t
 {
 	ERROR,
 	WARNING,

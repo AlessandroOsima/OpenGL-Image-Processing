@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "ShaderManager.h"
 #include "Logger/Logger.h"
 #include "Managers/ResourceManager.h"
@@ -23,14 +24,14 @@ bool ShaderManager::CreateShader(const std::string & ShaderProgramName, const st
 
 	if (!prg.CompileShader(vsStr += VertexShaderFilename, ShaderType::Vertex))
 	{
-		Logger::GetLogger().LogString("Vertex shader compile failed", ERROR);
+		Logger::GetLogger().LogString("Vertex shader compile failed", LogType::ERROR);
 		return false;
 	}
 	std::string fsStr = ResourceManager::GetShadersForlder();
 
 	if (!prg.CompileShader(fsStr += FragmentShaderFilename, ShaderType::Fragment))
 	{
-		Logger::GetLogger().LogString("Fragment shader compile failed", ERROR);
+		Logger::GetLogger().LogString("Fragment shader compile failed", LogType::ERROR);
 		return false;
 	}
 

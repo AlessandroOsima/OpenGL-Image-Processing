@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Filters.h"
 
 glm::mat3 Filters::GenerateSmoothingMatrix()

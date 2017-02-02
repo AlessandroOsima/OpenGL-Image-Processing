@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Renderable.h"
 #include "Logger/Logger.h"
 #include "GameObjects/Components/Transform.h"

@@ -9,7 +9,10 @@
 
 #include <stdio.h>
 #include <tchar.h>
-
+#include <string>
+#include <sstream>
+#include <iostream>
+#include "Logger/Logger.h"
 
 
 // TODO: reference additional headers your program requires here

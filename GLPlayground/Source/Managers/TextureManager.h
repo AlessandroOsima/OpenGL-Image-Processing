@@ -10,7 +10,7 @@ public:
 	~TextureManager();
 
 	bool CreateTextureFromFile(const std::string & TextureName, size_t & TextureID);
-	bool CreateTexture(const std::string & TextureName, uint32_t Width, uint32_t Height, size_t & TextureID);
+	bool CreateTexture(const std::string & TextureName, unsigned int Format, uint32_t Width, uint32_t Height, size_t & TextureID);
 
 	Texture & GetTextureFromID(size_t TextureID, bool & Found);
 

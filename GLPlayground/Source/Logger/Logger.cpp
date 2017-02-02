@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Logger.h"
 #include <iostream>
 
@@ -11,7 +12,7 @@ Logger::Logger() : LogFileEnable(false)
 		std::cout << "ERROR : File open failed with error : " << strerror(errno) <<std::endl;
 	}
 
-	LogString("Started Log sequence", LOG);
+	LogString("Started Log sequence", LogType::LOG);
 }
 
 void Logger::LogString(const std::string & String, LogType Type)
@@ -20,17 +21,17 @@ void Logger::LogString(const std::string & String, LogType Type)
 
 	switch (Type)
 	{
-	  case ERROR:
+	  case LogType::ERROR:
 	  {
 		 logType = "ERROR -> ";
 	  	 break;
 	  }
-	  case WARNING:
+	  case LogType::WARNING:
 	  {
 		 logType = "WARNIG -> ";
 	  	 break;
 	  }
-	  case LOG:
+	  case LogType::LOG:
 	  {
 		  logType = "LOG -> ";
 	     break;

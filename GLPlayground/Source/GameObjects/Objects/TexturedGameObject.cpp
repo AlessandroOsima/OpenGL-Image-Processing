@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "TexturedGameObject.h"
 #include "Renderer/RenderableScene.h"
 #include "Managers/ResourceManager.h"
@@ -9,6 +10,7 @@
 #include "GameObjects/Components/Transform.h"
 #include "GameObjects/Objects/TexturedGameObject.h"
 #include <glm/gtc/matrix_transform.hpp>
+
 
 TexturedGameObject::TexturedGameObject()
 {
