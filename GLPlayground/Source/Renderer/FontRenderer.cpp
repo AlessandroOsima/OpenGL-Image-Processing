@@ -50,7 +50,7 @@ void FontRenderer::Init(const std::string & FontName, WindowInfo Info)
 	unsigned char * data = new unsigned char[size];
 
 	size_t readBits = fread(data, 1, size, fontFile);
-	AllocatedChars = new stbtt_bakedchar[size];
+	AllocatedChars = new stbtt_bakedchar[96];
 
 	fclose(fontFile);
 
@@ -116,9 +116,9 @@ void FontRenderer::Init(const std::string & FontName, WindowInfo Info)
 
 	glm::mat4 projection = glm::ortho((float)0, (float)Info.Width, (float)0, (float)Info.Height, 0.f, 1.f);
 
-	UniformMatrices matrices{projection, glm::mat4(1), model};
+	UniformMatricesBuffer = {projection, glm::mat4(1), model};
 
-	glCheckFunction(glNamedBufferStorage(UniformMatricesBufferID, sizeof(UniformMatrices), &matrices, GL_DYNAMIC_STORAGE_BIT));
+	glCheckFunction(glNamedBufferStorage(UniformMatricesBufferID, sizeof(UniformMatrices), &UniformMatricesBuffer, GL_DYNAMIC_STORAGE_BIT));
 }
 
 void FontRenderer::Render(GLRenderer & Renderer)
@@ -129,6 +129,8 @@ void FontRenderer::Render(GLRenderer & Renderer)
 	//{ glm::vec3(-1.f, 1.f, -0.1f), glm::vec4(1, 0, 0, 1), glm::vec2(0,1) }, //2
 	//{ glm::vec3(-1.f,   -1.f, -0.1f), glm::vec4(0, 0, 1, 1), glm::vec2(0,0) }  //3
 
+
+	std::string text = "HELLO";
 	bool Found;
 
 	ShaderProgram & fontProgram = ShaderManager::GetShaderManager().GetShader(FontMaterial.Program, Found);
@@ -141,32 +143,40 @@ void FontRenderer::Render(GLRenderer & Renderer)
 	float x = 0;
 	float y = 0;
 
-	stbtt_aligned_quad q;
-	stbtt_GetBakedQuad((stbtt_bakedchar*)AllocatedChars, BitMapWidth, BitMapHeight, 'A' - 32, &x, &y, &q, 1);//1=opengl & d3d10+,0=d3d9
+	glm::mat4 OffsetModel = UniformMatricesBuffer.Model;
+
+	for (char  c : text)
+	{
+		
+		stbtt_aligned_quad q;
+		stbtt_GetBakedQuad((stbtt_bakedchar*)AllocatedChars, BitMapWidth, BitMapHeight, c - 32, &x, &y, &q, 1);//1=opengl & d3d10+,0=d3d9
 
 
-	float w = (q.x1 - q.x0);
-	float h = (q.y1 - q.y0);
+		float w = (q.x1 - q.x0);
+		float h = (q.y1 - q.y0);
 
-	glm::mat4 model;
+		glNamedBufferSubData(UniformMatricesBufferID, sizeof(glm::mat4) * 2, sizeof(glm::mat4), &OffsetModel);
 
-	Quad.GetVertices()[0].Position = glm::vec3(w/2, h/2, -0.1f);
-	Quad.GetVertices()[1].Position = glm::vec3(w/2, -(h/2), -0.1f);
-	Quad.GetVertices()[2].Position = glm::vec3(-(w/2), h/2, -0.1f);
-	Quad.GetVertices()[3].Position = glm::vec3(-(w / 2), -(h / 2), -0.1f);
+		OffsetModel = glm::translate(OffsetModel, glm::vec3(w, y, 0));
 
-	Quad.GetVertices()[0].UV = glm::vec2(q.s1, q.t0);
-	Quad.GetVertices()[1].UV = glm::vec2(q.s1, q.t1);
-	Quad.GetVertices()[2].UV = glm::vec2(q.s0, q.t0);
-	Quad.GetVertices()[3].UV = glm::vec2(q.s0, q.t1); 
+		Quad.GetVertices()[0].Position = glm::vec3(w / 2, h / 2, -0.1f);
+		Quad.GetVertices()[1].Position = glm::vec3(w / 2, -(h / 2), -0.1f);
+		Quad.GetVertices()[2].Position = glm::vec3(-(w / 2), h / 2, -0.1f);
+		Quad.GetVertices()[3].Position = glm::vec3(-(w / 2), -(h / 2), -0.1f);
 
-	Quad.UpdateVertexData();
+		Quad.GetVertices()[0].UV = glm::vec2(q.s1, q.t0);
+		Quad.GetVertices()[1].UV = glm::vec2(q.s1, q.t1);
+		Quad.GetVertices()[2].UV = glm::vec2(q.s0, q.t0);
+		Quad.GetVertices()[3].UV = glm::vec2(q.s0, q.t1);
 
-	Quad.Bind();
+		Quad.UpdateVertexData();
 
-	Renderer.DrawMesh(Quad);
+		Quad.Bind();
 
-	Quad.Unbind();
+		Renderer.DrawMesh(Quad);
+
+		Quad.Unbind();
+	}
 
 	FontMaterial.UnBind();
 }

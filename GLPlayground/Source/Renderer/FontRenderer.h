@@ -24,4 +24,6 @@ private:
 	const int BitMapWidth = 512;
 	const int BitMapHeight = 512;
 	const float Scale = 100;
+
+	UniformMatrices UniformMatricesBuffer;
 };

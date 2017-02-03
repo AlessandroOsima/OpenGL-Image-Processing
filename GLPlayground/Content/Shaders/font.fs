@@ -8,5 +8,6 @@ in vec2 uvCoords;
 
 void main()
 {
-  color = vec4(texture(diffuseSampler, uvCoords).xyz, 1);
+	vec4 colorSample = texture(diffuseSampler, uvCoords).rgba;
+  color = vec4(colorSample.rgb, colorSample.r);
 }
