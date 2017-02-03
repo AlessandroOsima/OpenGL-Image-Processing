@@ -130,7 +130,7 @@ void FontRenderer::Render(GLRenderer & Renderer)
 	//{ glm::vec3(-1.f,   -1.f, -0.1f), glm::vec4(0, 0, 1, 1), glm::vec2(0,0) }  //3
 
 
-	std::string text = "HELLO";
+	std::string text = "HELLO GUYS";
 	bool Found;
 
 	ShaderProgram & fontProgram = ShaderManager::GetShaderManager().GetShader(FontMaterial.Program, Found);
@@ -154,6 +154,13 @@ void FontRenderer::Render(GLRenderer & Renderer)
 
 		float w = (q.x1 - q.x0);
 		float h = (q.y1 - q.y0);
+
+		//We have a space character
+		if (c == 32)
+		{
+			w = Scale / 2;
+			h = Scale;
+		}
 
 		glNamedBufferSubData(UniformMatricesBufferID, sizeof(glm::mat4) * 2, sizeof(glm::mat4), &OffsetModel);
 
