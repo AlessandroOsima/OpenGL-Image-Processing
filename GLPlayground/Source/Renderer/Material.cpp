@@ -3,6 +3,7 @@
 #include "Managers/ShaderManager.h"
 #include "Managers/TextureManager.h"
 #include "Renderer/GLUtilities.h"
+#include "Logger/Asserts.h"
 
 void Material::Bind()
 {
@@ -40,6 +41,11 @@ Material::Material(size_t DiffuseTexture, size_t Program) : DiffuseTexture(Diffu
 
 }
 
+Material::Material() : DiffuseTexture(0), Program(0)
+{
+
+}
+
 Material::~Material()
 {
 
@@ -47,6 +53,8 @@ Material::~Material()
 
 void Material::CreateObjects()
 {
+	AssertWithMessage(Program, "No valid program texture in material");
+
 	glCreateSamplers(1, &DiffuseSampler);
 }
 

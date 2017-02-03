@@ -10,3 +10,9 @@ struct Vertex
 	glm::vec2 UV;
 };
 
+struct UniformMatrices
+{
+	glm::mat4 Projection;
+	glm::mat4 View;
+	glm::mat4 Model;
+};

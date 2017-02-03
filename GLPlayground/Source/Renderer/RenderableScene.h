@@ -13,12 +13,6 @@ using RenderablPassLocation = uint64_t;
 
 constexpr RenderablPassLocation InvalidRenderpassIndex = std::numeric_limits<size_t>::max();
 
-struct UniformMatrices
-{
-	glm::mat4 Projection;
-	glm::mat4 View;
-	glm::mat4 Model;
-};
 
 struct MeshStorageInfo
 {

@@ -15,19 +15,20 @@ class Mesh
 {
 public:
 	Mesh(const std::vector<Vertex> & Vertices, const std::vector<Index> & Indices);
+	Mesh();
 	~Mesh();
 
-	void GenerateMeshData();
+	void GenerateMeshData(const std::vector<Vertex> & NewVertices, const std::vector<Index> & NewIndices);
 
-	void BindMesh();
-	void UnbindMesh();
+	void Bind();
+	void Unbind();
 
-	inline const std::vector<Vertex> & GetVertices() const
+	inline std::vector<Vertex> & GetVertices()
 	{
 		return Vertices;
 	}
 
-	inline const std::vector<Index> & GetIndices() const
+	inline std::vector<Index> & GetIndices()
 	{
 		return Indices;
 	}
@@ -42,7 +43,8 @@ public:
 		return Model;
 	}
 
-
+	void UpdateVertexData();
+	void UpdateIndexData();
 private:
 	std::vector<Vertex> Vertices;
 	std::vector<Index> Indices;

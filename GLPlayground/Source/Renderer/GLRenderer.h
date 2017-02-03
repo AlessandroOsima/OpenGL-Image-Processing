@@ -18,7 +18,7 @@ public:
 
 	void Clear();
 	void Present();
-	void DrawMesh(const Mesh & mesh);
+	void DrawMesh(Mesh & mesh);
 	void Draw();
 
 	~GLRenderer();

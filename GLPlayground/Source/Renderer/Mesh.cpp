@@ -3,9 +3,13 @@
 #include "Managers/ShaderManager.h"
 #include "Managers/TextureManager.h"
 
-Mesh::Mesh(const std::vector<Vertex> & Vertices, const std::vector<Index> & Indices) : Vertices(Vertices), Indices(Indices)
+Mesh::Mesh(const std::vector<Vertex> & Vertices, const std::vector<Index> & Indices) 
 {
-	GenerateMeshData();
+	GenerateMeshData(Vertices, Indices);
+}
+
+Mesh::Mesh()
+{
 }
 
 Mesh::~Mesh()
@@ -16,15 +20,17 @@ Mesh::~Mesh()
 	glDeleteVertexArrays(1, &VAO);
 }
 
-void Mesh::GenerateMeshData()
+void Mesh::GenerateMeshData(const std::vector<Vertex> & NewVertices, const std::vector<Index> & NewIndices)
 {
+	Vertices = NewVertices;
+	Indices = NewIndices;
 
 	glCreateBuffers(1, &VEO);
-	glNamedBufferStorage(VEO, sizeof(Index) * Indices.size(), Indices.data(), 0);
+	glNamedBufferStorage(VEO, sizeof(Index) * Indices.size(), Indices.data(), GL_DYNAMIC_STORAGE_BIT);
 
 
 	glCreateBuffers(1, &VBO);
-	glNamedBufferStorage(VBO, sizeof(Vertex) * Vertices.size(), Vertices.data(), 0);
+	glNamedBufferStorage(VBO, sizeof(Vertex) * Vertices.size(), Vertices.data(), GL_DYNAMIC_STORAGE_BIT);
 
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
@@ -51,12 +57,22 @@ void Mesh::GenerateMeshData()
 	
 }
 
-void Mesh::BindMesh()
+void Mesh::Bind()
 {
 	glBindVertexArray(VAO);
 }
 
-void Mesh::UnbindMesh()
+void Mesh::Unbind()
 {
 	glBindVertexArray(0);
+}
+
+void Mesh::UpdateVertexData()
+{
+	glNamedBufferSubData(VBO, 0, Vertices.size() * sizeof(Vertex), Vertices.data());
+}
+
+void Mesh::UpdateIndexData()
+{
+	glNamedBufferSubData(VEO, 0, Indices.size() * sizeof(Index), Indices.data());
 }

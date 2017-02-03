@@ -63,7 +63,7 @@ void GLRenderer::Present()
 	glfwSwapBuffers(Context);
 }
 
-void GLRenderer::DrawMesh(const Mesh & mesh)
+void GLRenderer::DrawMesh(Mesh & mesh)
 {
 	glDrawElements(GL_TRIANGLES, (GLsizei)mesh.GetIndices().size(), GL_UNSIGNED_INT, 0);
 }

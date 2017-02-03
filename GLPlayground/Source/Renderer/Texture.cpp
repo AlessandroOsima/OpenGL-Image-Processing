@@ -50,8 +50,8 @@ void Texture::GenerateTextureWithSize(uint32_t Width, uint32_t Height, unsigned 
 	Info.Width = Width;
 	Info.Height = Height;
 
-	glCreateTextures(GL_TEXTURE_2D, 1, &ID);
-	glTextureStorage2D(ID, 1, Format, Width, Height);
+	glCheckFunction(glCreateTextures(GL_TEXTURE_2D, 1, &ID));
+	glCheckFunction(glTextureStorage2D(ID, 1, Format, Width, Height));
 }
 
 

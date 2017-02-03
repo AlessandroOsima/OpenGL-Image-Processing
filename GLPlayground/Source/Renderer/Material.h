@@ -11,6 +11,7 @@ struct Material
 
 
 	Material(size_t DiffuseTexture, size_t Program);
+	Material();
 	~Material();
 
 	void CreateObjects();

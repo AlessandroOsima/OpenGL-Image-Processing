@@ -27,8 +27,8 @@ void RenderableScene::Initialize()
 
 	ShaderManager::GetShaderManager().OnShaderAdded = [&](size_t HashedProgram)
 	{
-		static constexpr unsigned int MatricesBindingLocation = 0;
-		static constexpr char * MatricesUniformName = "Matrices";
+		constexpr unsigned int MatricesBindingLocation = 0;
+		constexpr char * MatricesUniformName = "Matrices";
 
 		bool found = false;
 		ShaderProgram & program = ShaderManager::GetShaderManager().GetShader(HashedProgram, found);
@@ -54,12 +54,17 @@ void RenderableScene::Initialize()
 		Logger::GetLogger().LogString("Unable to create base material for Renderable Scene", LogType::ERROR);
 	}
 
-	DummyFontRenderer.Init("FreeSans.ttf");
+	DummyFontRenderer.Init("arial.ttf", info);
 }
 
 void RenderableScene::RenderScene()
 {
+
+	WindowInfo info;
+	Renderer.GetCurrentWindowInfo(info);
+
 	Renderer.Clear();
+
 
 	for (auto & mesh : Meshes)
 	{
@@ -93,7 +98,7 @@ void RenderableScene::RenderScene()
 
 				Renderer.Clear();
 
-				mesh.Mesh->BindMesh();
+				mesh.Mesh->Bind();
 
 				if (group.RenderPasses[i].UsePreviousPassAsAttachment)
 				{
@@ -104,6 +109,17 @@ void RenderableScene::RenderScene()
 				group.RenderPasses[i].GetMaterial().Bind();
 				group.RenderPasses[i].BindUniforms();
 
+				bool ShaderFound;
+
+				ShaderProgram & program = ShaderManager::GetShaderManager().GetShader(group.RenderPasses[i].GetMaterial().Program, ShaderFound);
+			
+				AssertWithMessage(ShaderFound, "Unable to find shader");
+
+				constexpr unsigned int MatricesBindingLocation = 0;
+				constexpr char * MatricesUniformName = "Matrices";
+				program.BindBufferToUniform(UniformMatricesBufferID, MatricesBindingLocation, MatricesUniformName);
+
+
 				glNamedBufferSubData(UniformMatricesBufferID, 0, sizeof(glm::mat4), &glm::mat4(1));
 				glNamedBufferSubData(UniformMatricesBufferID, sizeof(glm::mat4), sizeof(glm::mat4), &glm::mat4(1));
 				glNamedBufferSubData(UniformMatricesBufferID, sizeof(glm::mat4) * 2, sizeof(glm::mat4), &glm::mat4(1));
@@ -111,7 +127,7 @@ void RenderableScene::RenderScene()
 				Renderer.DrawMesh(*mesh.Mesh);
 
 				group.RenderPasses[i].GetMaterial().UnBind();
-				mesh.Mesh->UnbindMesh();
+				mesh.Mesh->Unbind();
 
 				glBindTexture(GL_TEXTURE_2D, textureAttachment.GetID());
 				glCheckFunction(glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, colorTarget.GetTextureInfo().Width, colorTarget.GetTextureInfo().Height));
@@ -136,12 +152,9 @@ void RenderableScene::RenderScene()
 					OffscreenFramebuffer.UnbindFramebufferAttachment(FrameBufferAttachmentType::COLOR);
 					OffscreenFramebuffer.UnBindFramebuffer();
 
-					WindowInfo info;
-					Renderer.GetCurrentWindowInfo(info);
-
 					glViewport(0, 0, info.Width, info.Height);
 
-					mesh.Mesh->BindMesh();
+					mesh.Mesh->Bind();
 
 					BaseMaterial.DiffuseTexture = attachmentTexture;
 					BaseMaterial.Bind();
@@ -154,7 +167,7 @@ void RenderableScene::RenderScene()
 					Renderer.DrawMesh(*mesh.Mesh);
 
 					BaseMaterial.UnBind();
-					mesh.Mesh->UnbindMesh();
+					mesh.Mesh->Unbind();
 				
 				}
 			}
@@ -164,7 +177,12 @@ void RenderableScene::RenderScene()
 		}
 	}
 
-	DummyFontRenderer.Render();
+	OffscreenFramebuffer.UnbindFramebufferAttachment(FrameBufferAttachmentType::COLOR);
+	OffscreenFramebuffer.UnBindFramebuffer();
+
+	glViewport(0, 0, info.Width, info.Height);
+
+	DummyFontRenderer.Render(Renderer);
 
 	Renderer.Present();
 }

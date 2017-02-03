@@ -12,6 +12,8 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <assert.h>
+#include "Logger/Asserts.h"
 #include "Logger/Logger.h"
 
 
