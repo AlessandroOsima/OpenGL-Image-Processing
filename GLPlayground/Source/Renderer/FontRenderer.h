@@ -23,5 +23,5 @@ private:
 
 	const int BitMapWidth = 512;
 	const int BitMapHeight = 512;
-	const float Scale = 20;
+	const float Scale = 100;
 };

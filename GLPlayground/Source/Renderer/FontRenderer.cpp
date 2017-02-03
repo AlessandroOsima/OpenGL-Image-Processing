@@ -111,8 +111,8 @@ void FontRenderer::Init(const std::string & FontName, WindowInfo Info)
 
 
 	glm::mat4 model;
-	model = glm::scale(model, glm::vec3(1, 1, 1));
-	model = model * glm::translate(glm::mat4(), glm::vec3(0, 0, 1));
+	model = glm::scale(glm::mat4(1), glm::vec3(1, 1, 1));
+	model = glm::translate(model, glm::vec3(Info.Width/2, Info.Height/2, 0));
 
 	glm::mat4 projection = glm::ortho((float)0, (float)Info.Width, (float)0, (float)Info.Height, 0.f, 1.f);
 
@@ -145,8 +145,8 @@ void FontRenderer::Render(GLRenderer & Renderer)
 	stbtt_GetBakedQuad((stbtt_bakedchar*)AllocatedChars, BitMapWidth, BitMapHeight, 'A' - 32, &x, &y, &q, 1);//1=opengl & d3d10+,0=d3d9
 
 
-	float w = (q.x1 - q.x0) * Scale;
-	float h = (q.y1 - q.y0) * Scale;
+	float w = (q.x1 - q.x0);
+	float h = (q.y1 - q.y0);
 
 	glm::mat4 model;
 
@@ -154,10 +154,6 @@ void FontRenderer::Render(GLRenderer & Renderer)
 	Quad.GetVertices()[1].Position = glm::vec3(w/2, -(h/2), -0.1f);
 	Quad.GetVertices()[2].Position = glm::vec3(-(w/2), h/2, -0.1f);
 	Quad.GetVertices()[3].Position = glm::vec3(-(w / 2), -(h / 2), -0.1f);
-
-	Quad.UpdateVertexData();
-
-	//glNamedBufferSubData(UniformMatricesBufferID, sizeof(glm::mat4) * 2, sizeof(glm::mat4), &);
 
 	Quad.GetVertices()[0].UV = glm::vec2(q.s1, q.t0);
 	Quad.GetVertices()[1].UV = glm::vec2(q.s1, q.t1);
