@@ -21,9 +21,9 @@ private:
 
 	uint32_t UniformMatricesBufferID;
 
-	const int BitMapWidth = 512;
-	const int BitMapHeight = 512;
-	const float Scale = 100;
+	const int BitMapWidth = 1024;
+	const int BitMapHeight = 1024;
+	const float Scale;
 
 	UniformMatrices UniformMatricesBuffer;
 };

@@ -20,7 +20,7 @@
 #include <memory>
 #include "Renderer/GLUtilities.h"
 
-FontRenderer::FontRenderer()
+FontRenderer::FontRenderer() : Scale(100)
 {
 
 }
@@ -54,7 +54,7 @@ void FontRenderer::Init(const std::string & FontName, WindowInfo Info)
 
 	fclose(fontFile);
 
-	stbtt_BakeFontBitmap(data, 0, Scale, bitmap.get(), BitMapWidth, BitMapHeight, 32, 96, (stbtt_bakedchar*)AllocatedChars);
+	int res = stbtt_BakeFontBitmap(data, 0, Scale, bitmap.get(), BitMapWidth, BitMapHeight, 32, 96, (stbtt_bakedchar*)AllocatedChars);
 
 
 	delete[] data;
@@ -130,7 +130,7 @@ void FontRenderer::Render(GLRenderer & Renderer)
 	//{ glm::vec3(-1.f,   -1.f, -0.1f), glm::vec4(0, 0, 1, 1), glm::vec2(0,0) }  //3
 
 
-	std::string text = "HELLO GUYS";
+	std::string text = "HELLO WORLD";
 	bool Found;
 
 	ShaderProgram & fontProgram = ShaderManager::GetShaderManager().GetShader(FontMaterial.Program, Found);
@@ -140,14 +140,16 @@ void FontRenderer::Render(GLRenderer & Renderer)
 
 	FontMaterial.Bind();
 
-	float x = 0;
-	float y = 0;
+
 
 	glm::mat4 OffsetModel = UniformMatricesBuffer.Model;
 
 	for (char  c : text)
 	{
-		
+
+		float y = 0;
+		float x = 0;
+
 		stbtt_aligned_quad q;
 		stbtt_GetBakedQuad((stbtt_bakedchar*)AllocatedChars, BitMapWidth, BitMapHeight, c - 32, &x, &y, &q, 1);//1=opengl & d3d10+,0=d3d9
 
@@ -164,7 +166,7 @@ void FontRenderer::Render(GLRenderer & Renderer)
 
 		glNamedBufferSubData(UniformMatricesBufferID, sizeof(glm::mat4) * 2, sizeof(glm::mat4), &OffsetModel);
 
-		OffsetModel = glm::translate(OffsetModel, glm::vec3(w, y, 0));
+		OffsetModel = glm::translate(OffsetModel, glm::vec3(x, y, 0));
 
 		Quad.GetVertices()[0].Position = glm::vec3(w / 2, h / 2, -0.1f);
 		Quad.GetVertices()[1].Position = glm::vec3(w / 2, -(h / 2), -0.1f);
