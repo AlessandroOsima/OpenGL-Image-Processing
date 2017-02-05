@@ -20,7 +20,7 @@
 #include <memory>
 #include "Renderer/GLUtilities.h"
 
-FontRenderer::FontRenderer() : Scale(100)
+FontRenderer::FontRenderer() : Scale(50)
 {
 
 }
@@ -130,7 +130,7 @@ void FontRenderer::Render(GLRenderer & Renderer)
 	//{ glm::vec3(-1.f,   -1.f, -0.1f), glm::vec4(0, 0, 1, 1), glm::vec2(0,0) }  //3
 
 
-	std::string text = "HELLO WORLD";
+	std::string text = "Hello World";
 	bool Found;
 
 	ShaderProgram & fontProgram = ShaderManager::GetShaderManager().GetShader(FontMaterial.Program, Found);
@@ -142,43 +142,38 @@ void FontRenderer::Render(GLRenderer & Renderer)
 
 
 
-	glm::mat4 OffsetModel = UniformMatricesBuffer.Model;
+	float y = 0;
+	float x = 0;
+
+	stbtt_bakedchar* chars = (stbtt_bakedchar*)(AllocatedChars);
 
 	for (char  c : text)
 	{
-
-		float y = 0;
-		float x = 0;
-
 		stbtt_aligned_quad q;
-		stbtt_GetBakedQuad((stbtt_bakedchar*)AllocatedChars, BitMapWidth, BitMapHeight, c - 32, &x, &y, &q, 1);//1=opengl & d3d10+,0=d3d9
+		stbtt_GetBakedQuad(chars, BitMapWidth, BitMapHeight, c - 32, &x, &y, &q, 0);
 
+		/*glm::mat4 OffsetModel = UniformMatricesBuffer.Model;
+		OffsetModel = glm::translate(OffsetModel, glm::vec3(0, chars[c-32].yoff, 0));
+		
+		glNamedBufferSubData(UniformMatricesBufferID, sizeof(glm::mat4) * 2, sizeof(glm::mat4), &OffsetModel);*/
 
-		float w = (q.x1 - q.x0);
-		float h = (q.y1 - q.y0);
+		//OffsetModel = glm::translate(OffsetModel, glm::vec3(x, y, 0));
 
-		//We have a space character
-		if (c == 32)
-		{
-			w = Scale / 2;
-			h = Scale;
-		}
+		Quad.GetVertices()[0].Position = glm::vec3(q.x0, -q.y0, -0.1f);
+		Quad.GetVertices()[1].Position = glm::vec3(q.x1, -q.y0, -0.1f);
+		Quad.GetVertices()[2].Position = glm::vec3(q.x1, -q.y1, -0.1f);
+		Quad.GetVertices()[3].Position = glm::vec3(q.x0, -q.y1, -0.1f);
 
-		glNamedBufferSubData(UniformMatricesBufferID, sizeof(glm::mat4) * 2, sizeof(glm::mat4), &OffsetModel);
-
-		OffsetModel = glm::translate(OffsetModel, glm::vec3(x, y, 0));
-
-		Quad.GetVertices()[0].Position = glm::vec3(w / 2, h / 2, -0.1f);
-		Quad.GetVertices()[1].Position = glm::vec3(w / 2, -(h / 2), -0.1f);
-		Quad.GetVertices()[2].Position = glm::vec3(-(w / 2), h / 2, -0.1f);
-		Quad.GetVertices()[3].Position = glm::vec3(-(w / 2), -(h / 2), -0.1f);
-
-		Quad.GetVertices()[0].UV = glm::vec2(q.s1, q.t0);
-		Quad.GetVertices()[1].UV = glm::vec2(q.s1, q.t1);
-		Quad.GetVertices()[2].UV = glm::vec2(q.s0, q.t0);
+		Quad.GetVertices()[0].UV = glm::vec2(q.s0, q.t0);
+		Quad.GetVertices()[1].UV = glm::vec2(q.s1, q.t0);
+		Quad.GetVertices()[2].UV = glm::vec2(q.s1, q.t1);
 		Quad.GetVertices()[3].UV = glm::vec2(q.s0, q.t1);
 
 		Quad.UpdateVertexData();
+
+		Quad.GetIndices() = { 0,1,3,1,2,3 };
+
+		Quad.UpdateIndexData();
 
 		Quad.Bind();
 

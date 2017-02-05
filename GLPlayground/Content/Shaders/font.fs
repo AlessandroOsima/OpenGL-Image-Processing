@@ -9,5 +9,5 @@ in vec2 uvCoords;
 void main()
 {
 	vec4 colorSample = texture(diffuseSampler, uvCoords).rgba;
-  color = vec4(colorSample.r * fragmentColor.rgb, colorSample.r);
+    color = vec4(colorSample.r * fragmentColor.rgb, colorSample.r);
 }
