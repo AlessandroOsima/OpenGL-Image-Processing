@@ -90,21 +90,21 @@ void FontRenderer::Init(const std::string & FontName, WindowInfo Info)
 		FontMaterial.CreateObjects();
 	}
 
-	Quad.GenerateMeshData({  //Vertices
-		{ glm::vec3(1.f, 1.f, -0.1f), glm::vec4(0, 0, 1, 1), glm::vec2(1,1) }, //0
-		{ glm::vec3(1.f,  -1.f, -0.1f), glm::vec4(0, 1, 0, 1), glm::vec2(1,0) },  //1
-		{ glm::vec3(-1.f, 1.f, -0.1f), glm::vec4(1, 0, 0, 1), glm::vec2(0,1) }, //2
-		{ glm::vec3(-1.f,   -1.f, -0.1f), glm::vec4(0, 0, 1, 1), glm::vec2(0,0) }  //3
-	},
-		//Indices
-	{
-		0,
-		1,
-		2,
-		2,
-		1,
-		3
-	});
+	//Quad.GenerateMeshData({  //Vertices
+	//	{ glm::vec3(1.f, 1.f, -0.1f), glm::vec4(0, 0, 1, 1), glm::vec2(1,1) }, //0
+	//	{ glm::vec3(1.f,  -1.f, -0.1f), glm::vec4(0, 1, 0, 1), glm::vec2(1,0) },  //1
+	//	{ glm::vec3(-1.f, 1.f, -0.1f), glm::vec4(1, 0, 0, 1), glm::vec2(0,1) }, //2
+	//	{ glm::vec3(-1.f,   -1.f, -0.1f), glm::vec4(0, 0, 1, 1), glm::vec2(0,0) }  //3
+	//},
+	//	//Indices
+	//{
+	//	0,
+	//	1,
+	//	2,
+	//	2,
+	//	1,
+	//	3
+	//});
 
 
 	glCreateBuffers(1, &UniformMatricesBufferID);
@@ -140,53 +140,77 @@ void FontRenderer::Render(GLRenderer & Renderer)
 
 	FontMaterial.Bind();
 
-
-
 	float y = 0;
 	float x = 0;
 
-	stbtt_bakedchar* chars = (stbtt_bakedchar*)(AllocatedChars);
+	Mesh Quad;
 
-	for (char  c : text)
-	{
-		stbtt_aligned_quad q;
-		stbtt_GetBakedQuad(chars, BitMapWidth, BitMapHeight, c - 32, &x, &y, &q, 0);
+	FillMeshFromText(Quad, text);
 
-		/*glm::mat4 OffsetModel = UniformMatricesBuffer.Model;
-		OffsetModel = glm::translate(OffsetModel, glm::vec3(0, chars[c-32].yoff, 0));
-		
-		glNamedBufferSubData(UniformMatricesBufferID, sizeof(glm::mat4) * 2, sizeof(glm::mat4), &OffsetModel);*/
+	Quad.Bind();
 
-		//OffsetModel = glm::translate(OffsetModel, glm::vec3(x, y, 0));
+	Renderer.DrawMesh(Quad);
 
-		Quad.GetVertices()[0].Position = glm::vec3(q.x0, -q.y0, -0.1f);
-		Quad.GetVertices()[1].Position = glm::vec3(q.x1, -q.y0, -0.1f);
-		Quad.GetVertices()[2].Position = glm::vec3(q.x1, -q.y1, -0.1f);
-		Quad.GetVertices()[3].Position = glm::vec3(q.x0, -q.y1, -0.1f);
-
-		Quad.GetVertices()[0].UV = glm::vec2(q.s0, q.t0);
-		Quad.GetVertices()[1].UV = glm::vec2(q.s1, q.t0);
-		Quad.GetVertices()[2].UV = glm::vec2(q.s1, q.t1);
-		Quad.GetVertices()[3].UV = glm::vec2(q.s0, q.t1);
-
-		Quad.UpdateVertexData();
-
-		Quad.GetIndices() = { 0,1,3,1,2,3 };
-
-		Quad.UpdateIndexData();
-
-		Quad.Bind();
-
-		Renderer.DrawMesh(Quad);
-
-		Quad.Unbind();
-	}
+	Quad.Unbind();
 
 	FontMaterial.UnBind();
+
 }
 
 void FontRenderer::DeInit()
 {
 	delete[] AllocatedChars;
 	TextureManager::GetTextureManager().DestroyTexture(FontTextureID);
+}
+
+void FontRenderer::FillMeshFromText(Mesh & MesshToFill, std::string Text)
+{
+
+	stbtt_bakedchar* chars = (stbtt_bakedchar*)(AllocatedChars);
+	Index n = 0;
+
+	float y = 0;
+	float x = 0;
+
+	std::vector<Vertex> Vertices;
+	std::vector<Index> Indices;
+
+	for (char c : Text)
+	{
+		stbtt_aligned_quad q;
+		stbtt_GetBakedQuad(chars, BitMapWidth, BitMapHeight, c - 32, &x, &y, &q, 0);
+
+		Vertex v[4];
+		v[0].Position = glm::vec3(q.x0, -q.y0, -0.1f);
+		v[0].Color = glm::vec4(0, 0, 1, 1);
+		v[0].UV = glm::vec2(q.s0, q.t0);
+
+		v[1].Position = glm::vec3(q.x1, -q.y0, -0.1f);
+		v[1].Color = glm::vec4(0, 1, 0, 1);
+		v[1].UV = glm::vec2(q.s1, q.t0);
+
+		v[2].Position = glm::vec3(q.x1, -q.y1, -0.1f);
+		v[2].Color = glm::vec4(1, 0, 0, 1);
+		v[2].UV = glm::vec2(q.s1, q.t1);
+
+		v[3].Position = glm::vec3(q.x0, -q.y1, -0.1f);
+		v[3].Color = glm::vec4(0, 0, 1, 1);
+		v[3].UV = glm::vec2(q.s0, q.t1);
+
+		Vertices.push_back(v[0]);
+		Vertices.push_back(v[1]);
+		Vertices.push_back(v[2]);
+		Vertices.push_back(v[3]);
+
+		Indices.push_back(n + 0);
+		Indices.push_back(n + 1);
+		Indices.push_back(n + 3);
+		Indices.push_back(n + 1);
+		Indices.push_back(n + 2);
+		Indices.push_back(n + 3);
+
+		n += 4;
+	}
+
+	MesshToFill.GenerateMeshData(Vertices, Indices);
 }

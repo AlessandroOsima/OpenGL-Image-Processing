@@ -12,12 +12,15 @@ public:
 	void DeInit();
 
 private:
+
+	void FillMeshFromText(Mesh & MesshToFill, std::string Text);
+
 	void * AllocatedChars;
 
 	size_t FontTextureID;
 
 	Material FontMaterial;
-	Mesh Quad;
+	/*Mesh Quad;*/
 
 	uint32_t UniformMatricesBufferID;
 
