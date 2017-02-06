@@ -46,6 +46,30 @@ Material::Material() : DiffuseTexture(0), Program(0)
 
 }
 
+Material::Material(Material && MaterialToReplace) : 
+	DiffuseTexture(MaterialToReplace.DiffuseTexture), 
+	Program(MaterialToReplace.Program), 
+	DiffuseSampler(MaterialToReplace.DiffuseSampler)
+{
+	MaterialToReplace.DiffuseTexture = 0;
+	MaterialToReplace.DiffuseSampler = 0;
+	MaterialToReplace.Program = 0;
+}
+
+Material & Material::operator=(Material && MaterialToReplace)
+{
+
+	DiffuseTexture = MaterialToReplace.DiffuseTexture;
+	Program = MaterialToReplace.Program;
+	DiffuseSampler = MaterialToReplace.DiffuseSampler;
+
+	MaterialToReplace.DiffuseTexture = 0;
+	MaterialToReplace.DiffuseSampler = 0;
+	MaterialToReplace.Program = 0;
+
+	return *this;
+}
+
 Material::~Material()
 {
 

@@ -53,6 +53,22 @@ public:
 		CurrentView = View;
 	}
 
+	size_t CreateFontRenderer(std::string FontName);
+
+	void DestroyFontRenderer(size_t FontRendererID);
+	
+	inline FontRenderer * GetFontRenderer(size_t FontRendererID)
+	{
+		std::map<std::size_t, FontRenderer>::iterator it = FontRenderers.find(FontRendererID);
+
+		if (it != FontRenderers.end())
+		{
+			return nullptr;
+		}
+		
+		return &FontRenderers[FontRendererID];
+	}
+
 private:
 	std::vector<MeshStorageInfo> Meshes;
 	std::vector<RenderPassGroup> Passes;
@@ -73,6 +89,8 @@ private:
 
 	Material BaseMaterial;
 
-	FontRenderer DummyFontRenderer;
+	//std::vector<std::unique_ptr<Mesh>> TextMeshes;
+
+	std::map<size_t, FontRenderer> FontRenderers;
 };
 

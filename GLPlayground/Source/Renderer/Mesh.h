@@ -16,6 +16,10 @@ class Mesh
 public:
 	Mesh(const std::vector<Vertex> & Vertices, const std::vector<Index> & Indices);
 	Mesh();
+
+	Mesh(Mesh && MeshToReplace);
+	Mesh & operator=(Mesh && MeshToReplace);
+
 	~Mesh();
 
 	void GenerateMeshData(const std::vector<Vertex> & NewVertices, const std::vector<Index> & NewIndices);

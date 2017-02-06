@@ -6,7 +6,7 @@
 #include "GLUtilities.h"
 #include <glm/gtc/matrix_transform.hpp>
 
-RenderableScene::RenderableScene(GLRenderer & Renderer) : Renderer(Renderer), BaseMaterial(0,0)
+RenderableScene::RenderableScene(GLRenderer & Renderer) : Renderer(Renderer), BaseMaterial(0,0), TextMeshes()
 {
 }
 
@@ -54,7 +54,13 @@ void RenderableScene::Initialize()
 		Logger::GetLogger().LogString("Unable to create base material for Renderable Scene", LogType::ERROR);
 	}
 
-	DummyFontRenderer.Init("arial.ttf", info);
+	size_t ArialFontId =  CreateFontRenderer("arial.ttf");
+
+	//std::unique_ptr<Mesh> textMesh = FontRenderers[ArialFontId].CreateMeshFromText(TextInfo{ "Hello World", glm::vec4(1,1,1,1), glm::vec3(info.Width / 2, info.Height / 2, -0.1f) });
+	//std::unique_ptr<Mesh> textMesh2 = FontRenderers[ArialFontId].CreateMeshFromText(TextInfo{ "Hello World 2", glm::vec4(1,1,1,1), glm::vec3(info.Width / 2, info.Height - 50, -0.1f) });
+
+	//TextMeshes.push_back(std::move(textMesh));
+	//TextMeshes.push_back(std::move(textMesh2));
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -186,14 +192,22 @@ void RenderableScene::RenderScene()
 
 	glViewport(0, 0, info.Width, info.Height);
 
-	DummyFontRenderer.Render(Renderer);
+
+	for (auto & fontRenderer : FontRenderers)
+	{
+		fontRenderer.second.Render(Renderer, TextMeshes);
+	}
 
 	Renderer.Present();
 }
 
 void RenderableScene::DeInitialize()
 {
-	DummyFontRenderer.DeInit();
+	for (auto & fontRenderer : FontRenderers)
+	{
+		fontRenderer.second.DeInit();
+	}
+
 	BaseMaterial.RemoveObjects();
 }
 
@@ -242,7 +256,7 @@ RenderablPassLocation RenderableScene::AddRenderPassGroup(RenderPassGroup && Pas
 {
 	if (FirstRenderPassFree >= Passes.size())
 	{
-		Passes.push_back(PassesToAdd);
+		Passes.push_back(std::move(PassesToAdd));
 		Passes[Passes.size() - 1].Init();
 	}
 	else
@@ -280,4 +294,37 @@ bool RenderableScene::LinkMeshMultiPass(RenderableMeshLocation Mesh, RenderablPa
 	Meshes[Mesh].Location = Pass;
 
 	return true;
+}
+
+size_t RenderableScene::CreateFontRenderer(std::string FontName)
+{
+	size_t hash = std::hash<std::string>{}(FontName);
+
+	std::map<std::size_t, FontRenderer>::iterator it = FontRenderers.find(hash);
+
+	if (it != FontRenderers.end())
+	{
+		return hash;
+	}
+
+	FontRenderer FRenderer;
+
+	WindowInfo info;
+	Renderer.GetCurrentWindowInfo(info);
+
+	FRenderer.Init(FontName, info);
+
+	FontRenderers[hash] = std::move(FRenderer);
+
+	return hash;
+}
+
+void RenderableScene::DestroyFontRenderer(size_t FontRendererID)
+{
+	FontRenderer * fRenderer = GetFontRenderer(FontRendererID);
+
+	if (fRenderer)
+	{
+		FontRenderers.erase(FontRendererID);
+	}
 }

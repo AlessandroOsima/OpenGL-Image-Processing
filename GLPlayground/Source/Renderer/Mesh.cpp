@@ -8,8 +8,46 @@ Mesh::Mesh(const std::vector<Vertex> & Vertices, const std::vector<Index> & Indi
 	GenerateMeshData(Vertices, Indices);
 }
 
-Mesh::Mesh()
+Mesh::Mesh(): VEO(0), VBO(0), VAO(0), Model(glm::mat4(1))
 {
+
+}
+
+Mesh::Mesh(Mesh && MeshToReplace)
+{
+	Vertices = std::move(MeshToReplace.Vertices);
+	Indices = std::move(MeshToReplace.Indices);
+
+	Model = std::move(MeshToReplace.Model);
+
+	VBO = MeshToReplace.VBO;
+	MeshToReplace.VBO = 0;
+
+	VEO = MeshToReplace.VEO;
+	MeshToReplace.VEO = 0;
+
+	VAO = MeshToReplace.VAO;
+	MeshToReplace.VAO = 0;
+
+}
+
+Mesh & Mesh::operator=(Mesh && MeshToReplace)
+{
+	Vertices = std::move(MeshToReplace.Vertices);
+	Indices = std::move(MeshToReplace.Indices);
+
+	Model = std::move(MeshToReplace.Model);
+
+	VBO = MeshToReplace.VBO;
+	MeshToReplace.VBO = 0;
+
+	VEO = MeshToReplace.VEO;
+	MeshToReplace.VEO = 0;
+
+	VAO = MeshToReplace.VAO;
+	MeshToReplace.VAO = 0;
+
+	return *this;
 }
 
 Mesh::~Mesh()

@@ -2,13 +2,27 @@
 #include "RenderPass.h"
 #include <sstream>
 
-RenderPass::RenderPass(const Material & PassMaterial, bool RenderOnMainFramebuffer, bool UsePreviousPassAsAttachment) :
-	CurrentMaterial(PassMaterial),
+RenderPass::RenderPass(Material && PassMaterial, bool RenderOnMainFramebuffer, bool UsePreviousPassAsAttachment) :
+	CurrentMaterial(std::move(PassMaterial)),
 	RenderOnMainFramebuffer(RenderOnMainFramebuffer),
 	UsePreviousPassAsAttachment(UsePreviousPassAsAttachment)
 {
 }
 
+
+RenderPass::RenderPass(const RenderPass & RP)
+{
+	int blabla = 0;
+}
+
+RenderPass::RenderPass(RenderPass && RenderPassToReplace)
+{
+	RenderOnMainFramebuffer = RenderPassToReplace.RenderOnMainFramebuffer;
+	UsePreviousPassAsAttachment = RenderPassToReplace.UsePreviousPassAsAttachment;
+
+	Uniforms = std::move(RenderPassToReplace.Uniforms);
+	CurrentMaterial = std::move(RenderPassToReplace.CurrentMaterial);
+}
 
 RenderPass::~RenderPass()
 {
@@ -79,9 +93,33 @@ void RenderPass::DeInit()
 	CurrentMaterial.RemoveObjects();
 }
 
-RenderPassGroup::RenderPassGroup(uint32_t OffscreenTextureWidth, uint32_t OffscreenTextureHeight) : OffscreenTextureWidth(OffscreenTextureWidth), OffscreenTextureHeight(OffscreenTextureHeight)
+RenderPassGroup::RenderPassGroup(uint32_t OffscreenTextureWidth, uint32_t OffscreenTextureHeight) : OffscreenTextureWidth(OffscreenTextureWidth), OffscreenTextureHeight(OffscreenTextureHeight), RenderPasses({})
 {
 
+}
+
+RenderPassGroup::RenderPassGroup(RenderPassGroup && RenderPassGroupToReplace)
+{
+	RenderPasses = std::move(RenderPassGroupToReplace.RenderPasses);
+	OffscreenTextureHeight = RenderPassGroupToReplace.OffscreenTextureHeight;
+	OffscreenTextureWidth = RenderPassGroupToReplace.OffscreenTextureWidth;
+
+	OffscreenTexture = RenderPassGroupToReplace.OffscreenTexture;
+	RenderPassGroupToReplace.OffscreenTexture = 0;
+	AttachmentTexture = RenderPassGroupToReplace.AttachmentTexture;
+}
+
+RenderPassGroup & RenderPassGroup::operator=(RenderPassGroup && RenderPassGroupToReplace)
+{
+	RenderPasses = std::move(RenderPassGroupToReplace.RenderPasses);
+	OffscreenTextureHeight = RenderPassGroupToReplace.OffscreenTextureHeight;
+	OffscreenTextureWidth = RenderPassGroupToReplace.OffscreenTextureWidth;
+
+	OffscreenTexture = RenderPassGroupToReplace.OffscreenTexture;
+	RenderPassGroupToReplace.OffscreenTexture = 0;
+	AttachmentTexture = RenderPassGroupToReplace.AttachmentTexture;
+
+	return *this;
 }
 
 void RenderPassGroup::Init()

@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <tchar.h>
 #include <string>
+#include <functional>
 #include <sstream>
 #include <iostream>
 #include <assert.h>

@@ -3,30 +3,39 @@
 #include "Renderer/Mesh.h"
 #include "Renderer/GLRenderer.h"
 
+struct TextInfo
+{
+	std::string Text;
+	glm::vec4 Color;
+	glm::vec3 Position;
+};
+
 class FontRenderer
 {
 public:
 	FontRenderer();
-	void Init(const std::string & FontName, WindowInfo Info);
-	void Render(GLRenderer & Renderer);
+	FontRenderer(FontRenderer && RendererToReplace);
+	FontRenderer & operator=(FontRenderer && RendererToReplace);
+
+	bool Init(const std::string & FontName, WindowInfo Info);
+	void Render(GLRenderer & Renderer, std::vector<std::unique_ptr<Mesh>> & TextMeshes);
 	void DeInit();
 
-private:
+	std::unique_ptr<Mesh> CreateMeshFromText(TextInfo Text);
 
-	void FillMeshFromText(Mesh & MesshToFill, std::string Text);
+private:
 
 	void * AllocatedChars;
 
 	size_t FontTextureID;
 
 	Material FontMaterial;
-	/*Mesh Quad;*/
 
 	uint32_t UniformMatricesBufferID;
 
-	const int BitMapWidth = 1024;
-	const int BitMapHeight = 1024;
-	const float Scale;
+	int BitMapWidth = 1024;
+	int BitMapHeight = 1024;
+	float Scale;
 
 	UniformMatrices UniformMatricesBuffer;
 };

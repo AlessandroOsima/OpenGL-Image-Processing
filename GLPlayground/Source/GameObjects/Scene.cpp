@@ -159,7 +159,7 @@ void Scene::Init()
 			RenderPassGroup originalPassGroup(sizeX, sizeY);
 
 			Material passBaseMaterial{ textureID, BaseHash };
-			RenderPass passBase(passBaseMaterial, true, true);
+			RenderPass passBase(std::move(passBaseMaterial), true, true);
 			originalPassGroup.RenderPasses.push_back(std::move(passBase));
 
 			Renderable * originalRenderable = static_cast<Renderable*>(GameObjects[0]->GetComponentOfType(ComponentsType::Renderable));
@@ -170,11 +170,11 @@ void Scene::Init()
 			RenderPassGroup sharpenPassGroup(sizeX, sizeY);
 
 			Material passGrayMaterial{ textureID, GrayscaleHash };
-			RenderPass passGray(passGrayMaterial, false, true);
+			RenderPass passGray(std::move(passGrayMaterial), false, true);
 			sharpenPassGroup.RenderPasses.push_back(std::move(passGray));
 
 			Material passSharpMaterial{ textureID, BoxHash };
-			RenderPass passSharp(passSharpMaterial, true, true);
+			RenderPass passSharp(std::move(passSharpMaterial), true, true);
 			UniformTypeData sharpUniformData{ Filters::GenerateSharpenMatrix(9) };
 			UniformsToBind sharpUniform{ "Mask", sharpUniformData, UniformType::Mat3 };
 			passSharp.AddUniform(sharpUniform);
@@ -189,7 +189,7 @@ void Scene::Init()
 			RenderPassGroup passGroup(sizeX, sizeY);
 
 			Material passSmoothMaterial{ textureID, BoxHash };
-			RenderPass passSmooth(passSmoothMaterial, true, true);
+			RenderPass passSmooth(std::move(passSmoothMaterial), true, true);
 			UniformTypeData smoothUniformData{ Filters::GenerateSmoothingMatrix() };
 			UniformsToBind smoothUniform{ "Mask", smoothUniformData, UniformType::Mat3 };
 			passSmooth.AddUniform(smoothUniform);
@@ -203,25 +203,25 @@ void Scene::Init()
 			RenderPassGroup passGroup(sizeX, sizeY);
 
 			Material passGrayMaterial{ textureID, GrayscaleHash };
-			RenderPass passGray(passGrayMaterial, false, true);
+			RenderPass passGray(std::move(passGrayMaterial), false, true);
 			passGroup.RenderPasses.push_back(std::move(passGray));
 
 			Material passSmoothMaterial{ textureID, BoxHash };
-			RenderPass passSmooth(passSmoothMaterial, false, true);
+			RenderPass passSmooth(std::move(passSmoothMaterial), false, true);
 			UniformTypeData smoothUniformData{ Filters::GenerateSmoothingMatrix() };
 			UniformsToBind smoothUniform{ "Mask", smoothUniformData, UniformType::Mat3 };
 			passSmooth.AddUniform(smoothUniform);
 			passGroup.RenderPasses.push_back(std::move(passSmooth));
 
 			Material passSharpenMaterial{ textureID, BoxHash };
-			RenderPass passSharpen(passSharpenMaterial, false, true);
+			RenderPass passSharpen(std::move(passSharpenMaterial), false, true);
 			UniformTypeData sharpenUniformData{ Filters::GenerateSharpenMatrix(8) };
 			UniformsToBind sharpenUniform{ "Mask", sharpenUniformData, UniformType::Mat3 };
 			passSharpen.AddUniform(sharpenUniform);
 			passGroup.RenderPasses.push_back(std::move(passSharpen));
 
 			Material passSobelMaterial{ textureID, SobelHash };
-			RenderPass passSobel(passSobelMaterial, true, true);
+			RenderPass passSobel(std::move(passSobelMaterial), true, true);
 			passGroup.RenderPasses.push_back(std::move(passSobel));
 
 			Renderable * filteredRenderable = static_cast<Renderable*>(GameObjects[3]->GetComponentOfType(ComponentsType::Renderable));

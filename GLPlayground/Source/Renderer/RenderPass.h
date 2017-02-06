@@ -9,7 +9,9 @@ class RenderPass
 {
 
 public:
-	RenderPass(const Material & PassMaterial, bool RenderOnMainFramebuffer, bool UsePreviousPassAsAttachment);
+	RenderPass(Material && PassMaterial, bool RenderOnMainFramebuffer, bool UsePreviousPassAsAttachment);
+	RenderPass(const RenderPass & RP);
+	RenderPass(RenderPass && RenderPassToReplace);
 	~RenderPass();
 
 	inline Material & GetMaterial()
@@ -52,6 +54,8 @@ class RenderPassGroup
 
 public:
 	RenderPassGroup(uint32_t OffscreenTextureWidth, uint32_t OffscreenTextureHeight);
+	RenderPassGroup(RenderPassGroup && RenderPassGroupToReplace);
+	RenderPassGroup & operator=(RenderPassGroup && RenderPassGroupToReplace);
 
 	std::vector<RenderPass> RenderPasses;
 

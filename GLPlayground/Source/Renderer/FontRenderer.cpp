@@ -25,7 +25,41 @@ FontRenderer::FontRenderer() : Scale(50)
 
 }
 
-void FontRenderer::Init(const std::string & FontName, WindowInfo Info)
+FontRenderer::FontRenderer(FontRenderer && RendererToReplace) :
+	Scale(RendererToReplace.Scale),
+	BitMapHeight(RendererToReplace.BitMapHeight),
+	BitMapWidth(RendererToReplace.BitMapWidth),
+	AllocatedChars(RendererToReplace.AllocatedChars),
+	FontTextureID(RendererToReplace.FontTextureID),
+	FontMaterial(std::move(RendererToReplace.FontMaterial)),
+	UniformMatricesBufferID(RendererToReplace.UniformMatricesBufferID),
+	UniformMatricesBuffer(std::move(RendererToReplace.UniformMatricesBuffer))
+{
+	RendererToReplace.AllocatedChars = 0;
+	RendererToReplace.FontTextureID = 0;
+	RendererToReplace.UniformMatricesBufferID = 0;
+}
+
+FontRenderer & FontRenderer::operator=(FontRenderer && RendererToReplace)
+{
+	Scale = RendererToReplace.Scale;
+	BitMapHeight = RendererToReplace.BitMapHeight;
+	BitMapWidth = RendererToReplace.BitMapWidth;
+
+	AllocatedChars = RendererToReplace.AllocatedChars;
+	FontTextureID = RendererToReplace.FontTextureID;
+	FontMaterial = std::move(RendererToReplace.FontMaterial);
+	UniformMatricesBufferID = RendererToReplace.UniformMatricesBufferID;
+	UniformMatricesBuffer = std::move(RendererToReplace.UniformMatricesBuffer);
+
+	RendererToReplace.AllocatedChars = 0;
+	RendererToReplace.FontTextureID = 0;
+	RendererToReplace.UniformMatricesBufferID = 0;
+
+	return *this;
+}
+
+bool FontRenderer::Init(const std::string & FontName, WindowInfo Info)
 {
 
 	auto bitmap = std::make_unique<unsigned char[]>(BitMapWidth * BitMapHeight);
@@ -38,7 +72,7 @@ void FontRenderer::Init(const std::string & FontName, WindowInfo Info)
 		stream << "Font file " << FontName << " cannot be opened for read" << std::ends;
 
 		Logger::GetLogger().LogString(stream.str(), LogType::ERROR);
-		return;
+		return false;
 	}
 
 	fseek(fontFile, 0, SEEK_END);
@@ -78,6 +112,7 @@ void FontRenderer::Init(const std::string & FontName, WindowInfo Info)
 		std::stringstream stream;
 		stream << "Creating texture for font " << FontName << " failed" << std::ends;
 		Logger::GetLogger().LogString(stream.str(), LogType::ERROR);
+		return false;
 	}
 
 
@@ -89,30 +124,20 @@ void FontRenderer::Init(const std::string & FontName, WindowInfo Info)
 		FontMaterial.Program = fontShader;
 		FontMaterial.CreateObjects();
 	}
+	else
+	{
+		std::stringstream stream;
+		stream << "Creating material for font " << FontName << " failed" << std::ends;
+		Logger::GetLogger().LogString(stream.str(), LogType::ERROR);
 
-	//Quad.GenerateMeshData({  //Vertices
-	//	{ glm::vec3(1.f, 1.f, -0.1f), glm::vec4(0, 0, 1, 1), glm::vec2(1,1) }, //0
-	//	{ glm::vec3(1.f,  -1.f, -0.1f), glm::vec4(0, 1, 0, 1), glm::vec2(1,0) },  //1
-	//	{ glm::vec3(-1.f, 1.f, -0.1f), glm::vec4(1, 0, 0, 1), glm::vec2(0,1) }, //2
-	//	{ glm::vec3(-1.f,   -1.f, -0.1f), glm::vec4(0, 0, 1, 1), glm::vec2(0,0) }  //3
-	//},
-	//	//Indices
-	//{
-	//	0,
-	//	1,
-	//	2,
-	//	2,
-	//	1,
-	//	3
-	//});
-
+		return false;
+	}
 
 	glCreateBuffers(1, &UniformMatricesBufferID);
 
-
-	glm::mat4 model;
-	model = glm::scale(glm::mat4(1), glm::vec3(1, 1, 1));
-	model = glm::translate(model, glm::vec3(Info.Width/2, Info.Height/2, 0));
+	glm::mat4 model = glm::mat4(1);
+	//model = glm::scale(glm::mat4(1), glm::vec3(1, 1, 1));
+	//model = glm::translate(model, glm::vec3(Info.Width/2, Info.Height/2, 0));
 
 	glm::mat4 projection = glm::ortho((float)0, (float)Info.Width, (float)0, (float)Info.Height, 0.f, 1.f);
 
@@ -121,16 +146,8 @@ void FontRenderer::Init(const std::string & FontName, WindowInfo Info)
 	glCheckFunction(glNamedBufferStorage(UniformMatricesBufferID, sizeof(UniformMatrices), &UniformMatricesBuffer, GL_DYNAMIC_STORAGE_BIT));
 }
 
-void FontRenderer::Render(GLRenderer & Renderer)
+void FontRenderer::Render(GLRenderer & Renderer, std::vector<std::unique_ptr<Mesh>> & TextMeshes)
 {
-
-	//{ glm::vec3(1.f, 1.f, -0.1f), glm::vec4(0, 0, 1, 1), glm::vec2(1, 1) }, //0
-	//{ glm::vec3(1.f,  -1.f, -0.1f), glm::vec4(0, 1, 0, 1), glm::vec2(1,0) },  //1
-	//{ glm::vec3(-1.f, 1.f, -0.1f), glm::vec4(1, 0, 0, 1), glm::vec2(0,1) }, //2
-	//{ glm::vec3(-1.f,   -1.f, -0.1f), glm::vec4(0, 0, 1, 1), glm::vec2(0,0) }  //3
-
-
-	std::string text = "Hello World";
 	bool Found;
 
 	ShaderProgram & fontProgram = ShaderManager::GetShaderManager().GetShader(FontMaterial.Program, Found);
@@ -140,18 +157,14 @@ void FontRenderer::Render(GLRenderer & Renderer)
 
 	FontMaterial.Bind();
 
-	float y = 0;
-	float x = 0;
+	for (auto & mesh : TextMeshes)
+	{
+		mesh->Bind();
 
-	Mesh Quad;
+		Renderer.DrawMesh(*mesh);
 
-	FillMeshFromText(Quad, text);
-
-	Quad.Bind();
-
-	Renderer.DrawMesh(Quad);
-
-	Quad.Unbind();
+		mesh->Unbind();
+	}
 
 	FontMaterial.UnBind();
 
@@ -159,42 +172,52 @@ void FontRenderer::Render(GLRenderer & Renderer)
 
 void FontRenderer::DeInit()
 {
-	delete[] AllocatedChars;
+	if (AllocatedChars)
+	{
+		delete[] AllocatedChars;
+	}
+
 	TextureManager::GetTextureManager().DestroyTexture(FontTextureID);
+	
+	glDeleteBuffers(1, &UniformMatricesBufferID);
+
 }
 
-void FontRenderer::FillMeshFromText(Mesh & MesshToFill, std::string Text)
+std::unique_ptr<Mesh> FontRenderer::CreateMeshFromText(TextInfo Text)
 {
+	std::unique_ptr<Mesh> mesh = std::make_unique<Mesh>();
 
 	stbtt_bakedchar* chars = (stbtt_bakedchar*)(AllocatedChars);
 	Index n = 0;
 
-	float y = 0;
-	float x = 0;
+	float y = -Text.Position.y;
+	float x = Text.Position.x;
 
 	std::vector<Vertex> Vertices;
 	std::vector<Index> Indices;
 
-	for (char c : Text)
+	for (char c : Text.Text)
 	{
 		stbtt_aligned_quad q;
 		stbtt_GetBakedQuad(chars, BitMapWidth, BitMapHeight, c - 32, &x, &y, &q, 0);
 
+		float ZPos = Text.Position.z;
+
 		Vertex v[4];
-		v[0].Position = glm::vec3(q.x0, -q.y0, -0.1f);
-		v[0].Color = glm::vec4(0, 0, 1, 1);
+		v[0].Position = glm::vec3(q.x0, -q.y0, ZPos);
+		v[0].Color = Text.Color;
 		v[0].UV = glm::vec2(q.s0, q.t0);
 
-		v[1].Position = glm::vec3(q.x1, -q.y0, -0.1f);
-		v[1].Color = glm::vec4(0, 1, 0, 1);
+		v[1].Position = glm::vec3(q.x1, -q.y0, ZPos);
+		v[1].Color = Text.Color;
 		v[1].UV = glm::vec2(q.s1, q.t0);
 
-		v[2].Position = glm::vec3(q.x1, -q.y1, -0.1f);
-		v[2].Color = glm::vec4(1, 0, 0, 1);
+		v[2].Position = glm::vec3(q.x1, -q.y1, ZPos);
+		v[2].Color = Text.Color;
 		v[2].UV = glm::vec2(q.s1, q.t1);
 
-		v[3].Position = glm::vec3(q.x0, -q.y1, -0.1f);
-		v[3].Color = glm::vec4(0, 0, 1, 1);
+		v[3].Position = glm::vec3(q.x0, -q.y1, ZPos);
+		v[3].Color = Text.Color;
 		v[3].UV = glm::vec2(q.s0, q.t1);
 
 		Vertices.push_back(v[0]);
@@ -212,5 +235,7 @@ void FontRenderer::FillMeshFromText(Mesh & MesshToFill, std::string Text)
 		n += 4;
 	}
 
-	MesshToFill.GenerateMeshData(Vertices, Indices);
+	mesh->GenerateMeshData(Vertices, Indices);
+
+	return mesh;
 }
