@@ -4,7 +4,8 @@ enum class ComponentsType : int
 {
 	Base,
 	Transform,
-	Renderable
+	Renderable,
+	Text
 };
 
 class Object;

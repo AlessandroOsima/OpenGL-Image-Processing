@@ -6,7 +6,7 @@
 #include "GLUtilities.h"
 #include <glm/gtc/matrix_transform.hpp>
 
-RenderableScene::RenderableScene(GLRenderer & Renderer) : Renderer(Renderer), BaseMaterial(0,0), TextMeshes()
+RenderableScene::RenderableScene(GLRenderer & Renderer) : Renderer(Renderer), BaseMaterial(0,0)
 {
 }
 
@@ -19,11 +19,11 @@ void RenderableScene::Initialize()
 {
 	glCreateBuffers(1, &UniformMatricesBufferID);
 	glNamedBufferStorage(UniformMatricesBufferID, sizeof(UniformMatricesBuffer), &UniformMatricesBuffer, GL_DYNAMIC_STORAGE_BIT);
-	
+
 	WindowInfo info;
 	Renderer.GetCurrentWindowInfo(info);
 
-	CurrentProjection = glm::ortho((float)0, (float)info.Width, (float)0, (float)info.Height, 0.f , 1.f);
+	CurrentProjection = glm::ortho((float)0, (float)info.Width, (float)0, (float)info.Height, 0.f, 1.f);
 
 	ShaderManager::GetShaderManager().OnShaderAdded = [&](size_t HashedProgram)
 	{
@@ -38,7 +38,7 @@ void RenderableScene::Initialize()
 			program.BindBufferToUniform(UniformMatricesBufferID, MatricesBindingLocation, MatricesUniformName);
 		}
 
-		glNamedBufferSubData( UniformMatricesBufferID, 0, sizeof(glm::mat4), &CurrentProjection);
+		glNamedBufferSubData(UniformMatricesBufferID, 0, sizeof(glm::mat4), &CurrentProjection);
 
 		glNamedBufferSubData(UniformMatricesBufferID, sizeof(glm::mat4), sizeof(glm::mat4), &CurrentView);
 	};
@@ -54,20 +54,12 @@ void RenderableScene::Initialize()
 		Logger::GetLogger().LogString("Unable to create base material for Renderable Scene", LogType::ERROR);
 	}
 
-	size_t ArialFontId =  CreateFontRenderer("arial.ttf");
-
-	//std::unique_ptr<Mesh> textMesh = FontRenderers[ArialFontId].CreateMeshFromText(TextInfo{ "Hello World", glm::vec4(1,1,1,1), glm::vec3(info.Width / 2, info.Height / 2, -0.1f) });
-	//std::unique_ptr<Mesh> textMesh2 = FontRenderers[ArialFontId].CreateMeshFromText(TextInfo{ "Hello World 2", glm::vec4(1,1,1,1), glm::vec3(info.Width / 2, info.Height - 50, -0.1f) });
-
-	//TextMeshes.push_back(std::move(textMesh));
-	//TextMeshes.push_back(std::move(textMesh2));
-
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 }
 
-void RenderableScene::RenderScene()
+void RenderableScene::RenderScene(float DeltaTime)
 {
 
 	WindowInfo info;
@@ -195,7 +187,7 @@ void RenderableScene::RenderScene()
 
 	for (auto & fontRenderer : FontRenderers)
 	{
-		fontRenderer.second.Render(Renderer, TextMeshes);
+		fontRenderer.second.Render(Renderer, DeltaTime);
 	}
 
 	Renderer.Present();

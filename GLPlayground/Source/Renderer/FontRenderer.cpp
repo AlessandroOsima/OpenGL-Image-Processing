@@ -20,7 +20,7 @@
 #include <memory>
 #include "Renderer/GLUtilities.h"
 
-FontRenderer::FontRenderer() : Scale(50)
+FontRenderer::FontRenderer() : Scale(30), RenderDatas()
 {
 
 }
@@ -33,7 +33,8 @@ FontRenderer::FontRenderer(FontRenderer && RendererToReplace) :
 	FontTextureID(RendererToReplace.FontTextureID),
 	FontMaterial(std::move(RendererToReplace.FontMaterial)),
 	UniformMatricesBufferID(RendererToReplace.UniformMatricesBufferID),
-	UniformMatricesBuffer(std::move(RendererToReplace.UniformMatricesBuffer))
+	UniformMatricesBuffer(std::move(RendererToReplace.UniformMatricesBuffer)),
+	RenderDatas(std::move(RendererToReplace.RenderDatas))
 {
 	RendererToReplace.AllocatedChars = 0;
 	RendererToReplace.FontTextureID = 0;
@@ -51,6 +52,7 @@ FontRenderer & FontRenderer::operator=(FontRenderer && RendererToReplace)
 	FontMaterial = std::move(RendererToReplace.FontMaterial);
 	UniformMatricesBufferID = RendererToReplace.UniformMatricesBufferID;
 	UniformMatricesBuffer = std::move(RendererToReplace.UniformMatricesBuffer);
+	RenderDatas = std::move(RendererToReplace.RenderDatas);
 
 	RendererToReplace.AllocatedChars = 0;
 	RendererToReplace.FontTextureID = 0;
@@ -144,10 +146,14 @@ bool FontRenderer::Init(const std::string & FontName, WindowInfo Info)
 	UniformMatricesBuffer = {projection, glm::mat4(1), model};
 
 	glCheckFunction(glNamedBufferStorage(UniformMatricesBufferID, sizeof(UniformMatrices), &UniformMatricesBuffer, GL_DYNAMIC_STORAGE_BIT));
+
+	return true;
 }
 
-void FontRenderer::Render(GLRenderer & Renderer, std::vector<std::unique_ptr<Mesh>> & TextMeshes)
+void FontRenderer::Render(GLRenderer & Renderer, float DeltaTime)
 {
+
+
 	bool Found;
 
 	ShaderProgram & fontProgram = ShaderManager::GetShaderManager().GetShader(FontMaterial.Program, Found);
@@ -157,16 +163,31 @@ void FontRenderer::Render(GLRenderer & Renderer, std::vector<std::unique_ptr<Mes
 
 	FontMaterial.Bind();
 
-	for (auto & mesh : TextMeshes)
+	for (auto & renderData : RenderDatas)
 	{
-		mesh->Bind();
+		renderData.TextMesh->Bind();
 
-		Renderer.DrawMesh(*mesh);
+		Renderer.DrawMesh(*renderData.TextMesh);
 
-		mesh->Unbind();
+		renderData.TextMesh->Unbind();
 	}
 
 	FontMaterial.UnBind();
+
+	for (int i = 0; i < RenderDatas.size(); i++)
+	{
+		if (RenderDatas[i].Infinite)
+		{
+			continue;
+		}
+
+		RenderDatas[i].Duration = RenderDatas[i].Duration - DeltaTime;
+
+		if (RenderDatas[i].Duration <= 0)
+		{
+			RenderDatas.erase(RenderDatas.begin() + i);
+		}
+	}
 
 }
 
@@ -238,4 +259,42 @@ std::unique_ptr<Mesh> FontRenderer::CreateMeshFromText(TextInfo Text)
 	mesh->GenerateMeshData(Vertices, Indices);
 
 	return mesh;
+}
+
+void FontRenderer::RenderText(TextInfo Info, float Duration, bool Infinite /*= false*/)
+{
+	TextRenderData renderData { std::move(CreateMeshFromText(Info)), Duration, Infinite};
+	RenderDatas.push_back(std::move(renderData));
+}
+
+TextRenderData::TextRenderData(TextRenderData && RenderData)
+{
+	TextMesh = std::move(RenderData.TextMesh);
+	Duration = RenderData.Duration;
+	Infinite = RenderData.Infinite;
+}
+
+TextRenderData::TextRenderData(std::unique_ptr<Mesh> && MeshToReplace, float Duration, bool Infinite) :
+	TextMesh(std::move(MeshToReplace)),
+	Duration(Duration),
+	Infinite(Infinite)
+{
+
+}
+
+TextRenderData::TextRenderData() :
+	TextMesh(nullptr),
+	Duration(0),
+	Infinite(false)
+{
+
+}
+
+TextRenderData & TextRenderData::operator=(TextRenderData && RenderDataToReplace)
+{
+	TextMesh = std::move(RenderDataToReplace.TextMesh);
+	Duration = RenderDataToReplace.Duration;
+	Infinite = RenderDataToReplace.Infinite;
+
+	return *this;
 }

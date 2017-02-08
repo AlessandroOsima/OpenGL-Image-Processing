@@ -11,6 +11,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "Math/Filters.h"
 #include "Managers/TextureManager.h"
+#include "GameObjects/Components/Text.h"
+
 
 Scene::Scene(RenderableScene & RenderScene) : RenderScene(RenderScene)
 {
@@ -120,31 +122,34 @@ void Scene::Init()
 	int sizeX = info.Width;
 	int sizeY = info.Height;
 
+	int inWindowSizeX = sizeX / 4;
+	int inWindowSizeY = sizeY / 4;
+
 	//ORIGINAL
 	Transform * originalTransform = static_cast<Transform*>(GameObjects[0]->GetComponentOfType(ComponentsType::Transform));
-	originalTransform->SetTranslate(glm::translate(glm::mat4(), glm::vec3(sizeX / 4, sizeY / 2 + sizeY / 4 , 0)));
+	originalTransform->SetTranslate(glm::translate(glm::mat4(), glm::vec3(inWindowSizeX, sizeY / 2 + inWindowSizeY, 0)));
 
-	originalTransform->SetScale(glm::scale(glm::mat4(), glm::vec3(info.Width / 4, info.Height / 4, 1.f)));
+	originalTransform->SetScale(glm::scale(glm::mat4(), glm::vec3(inWindowSizeX, inWindowSizeY, 1.f)));
 
 	//SHARPEN
 
 	Transform * sharpenTransform = static_cast<Transform*>(GameObjects[1]->GetComponentOfType(ComponentsType::Transform));
-	sharpenTransform->SetTranslate(glm::translate(glm::mat4(), glm::vec3(sizeX / 4 + sizeX / 2, sizeY / 2 + sizeY / 4, 0)));
+	sharpenTransform->SetTranslate(glm::translate(glm::mat4(), glm::vec3(inWindowSizeX + sizeX / 2, sizeY / 2 + inWindowSizeY, 0)));
 
-	sharpenTransform->SetScale(glm::scale(glm::mat4(), glm::vec3(info.Width / 4, info.Height / 4, 1.f)));
+	sharpenTransform->SetScale(glm::scale(glm::mat4(), glm::vec3(inWindowSizeX, inWindowSizeY, 1.f)));
 
 	//SMOOTH
 
 	Transform * smoothTransform = static_cast<Transform*>(GameObjects[2]->GetComponentOfType(ComponentsType::Transform));
-	smoothTransform->SetTranslate(glm::translate(glm::mat4(), glm::vec3(sizeX / 4, sizeY / 4, 0)));
+	smoothTransform->SetTranslate(glm::translate(glm::mat4(), glm::vec3(inWindowSizeX, inWindowSizeY, 0)));
 
-	smoothTransform->SetScale(glm::scale(glm::mat4(), glm::vec3(info.Width / 4, info.Height / 4, 1.f)));
+	smoothTransform->SetScale(glm::scale(glm::mat4(), glm::vec3(inWindowSizeX, inWindowSizeY, 1.f)));
 
 	//FILTERED
 	Transform * filteredTransform = static_cast<Transform*>(GameObjects[3]->GetComponentOfType(ComponentsType::Transform));
-	filteredTransform->SetTranslate(glm::translate(glm::mat4(), glm::vec3(sizeX / 4 + sizeX / 2, sizeY / 4, 0)));
+	filteredTransform->SetTranslate(glm::translate(glm::mat4(), glm::vec3(inWindowSizeX + sizeX / 2, inWindowSizeY, 0)));
 
-	filteredTransform->SetScale(glm::scale(glm::mat4(), glm::vec3(info.Width / 4, info.Height / 4, 1.f)));
+	filteredTransform->SetScale(glm::scale(glm::mat4(), glm::vec3(inWindowSizeX, inWindowSizeY, 1.f)));
 
 	size_t BaseHash;
 	size_t GrayscaleHash;
@@ -154,7 +159,7 @@ void Scene::Init()
 
 	if (ShaderManager::GetShaderManager().CreateShader("base", "base.vs", "base.fs", BaseHash) && ShaderManager::GetShaderManager().CreateShader("grayscale", "grayscale.vs", "grayscale.fs", GrayscaleHash) && ShaderManager::GetShaderManager().CreateShader("box", "box.vs", "box.fs", BoxHash) &&  ShaderManager::GetShaderManager().CreateShader("sobel", "sobel.vs", "sobel.fs", SobelHash))
 	{
-
+		//Set Up Renderpasses on Objects
 		{
 			RenderPassGroup originalPassGroup(sizeX, sizeY);
 
@@ -164,6 +169,12 @@ void Scene::Init()
 
 			Renderable * originalRenderable = static_cast<Renderable*>(GameObjects[0]->GetComponentOfType(ComponentsType::Renderable));
 			originalRenderable->AddPassesOnMesh(std::move(originalPassGroup));
+
+			Text * originalText = static_cast<Text*>(GameObjects[0]->GetComponentOfType(ComponentsType::Text));
+			originalText->SetText("ORIGINAL", glm::vec4(0, 0.6f, 1, 1), glm::vec3(-50, inWindowSizeY - 25, -0.1f), "arial.ttf", true, true);
+
+			//originalText->SetText("#FUCKUNITY", glm::vec4(0.5, 1, 0, 1), glm::vec3(sizeX / 2 - 150, sizeY / 2, -0.1f), "arial.ttf", true, false);
+
 		}
 
 		{
@@ -183,6 +194,10 @@ void Scene::Init()
 
 			Renderable * sharpenRenderable = static_cast<Renderable*>(GameObjects[1]->GetComponentOfType(ComponentsType::Renderable));
 			sharpenRenderable->AddPassesOnMesh(std::move(sharpenPassGroup));
+
+			Text * sharpenText = static_cast<Text*>(GameObjects[1]->GetComponentOfType(ComponentsType::Text));
+			sharpenText->SetText("GRAYSCALE + SHARPEN 3x3 FACTOR 9", glm::vec4(0, 0.6f, 1, 1), glm::vec3(-280, inWindowSizeY - 25, -0.1f), "arial.ttf", true, true);
+
 		} 
 		
 		{
@@ -197,6 +212,10 @@ void Scene::Init()
 
 			Renderable * renderable = static_cast<Renderable*>(GameObjects[2]->GetComponentOfType(ComponentsType::Renderable));
 			renderable->AddPassesOnMesh(std::move(passGroup));
+
+			Text * smoothText = static_cast<Text*>(GameObjects[2]->GetComponentOfType(ComponentsType::Text));
+			smoothText->SetText("SMOOTH", glm::vec4(0, 0.6f, 1, 1), glm::vec3(-50, inWindowSizeY - 25, -0.1f), "arial.ttf", true, true);
+
 		}
 
 		{
@@ -213,12 +232,12 @@ void Scene::Init()
 			passSmooth.AddUniform(smoothUniform);
 			passGroup.RenderPasses.push_back(std::move(passSmooth));
 
-			Material passSharpenMaterial{ textureID, BoxHash };
+			/*Material passSharpenMaterial{ textureID, BoxHash };
 			RenderPass passSharpen(std::move(passSharpenMaterial), false, true);
 			UniformTypeData sharpenUniformData{ Filters::GenerateSharpenMatrix(8) };
 			UniformsToBind sharpenUniform{ "Mask", sharpenUniformData, UniformType::Mat3 };
 			passSharpen.AddUniform(sharpenUniform);
-			passGroup.RenderPasses.push_back(std::move(passSharpen));
+			passGroup.RenderPasses.push_back(std::move(passSharpen));*/
 
 			Material passSobelMaterial{ textureID, SobelHash };
 			RenderPass passSobel(std::move(passSobelMaterial), true, true);
@@ -226,19 +245,20 @@ void Scene::Init()
 
 			Renderable * filteredRenderable = static_cast<Renderable*>(GameObjects[3]->GetComponentOfType(ComponentsType::Renderable));
 			filteredRenderable->AddPassesOnMesh(std::move(passGroup));
+
+			Text * filteredText = static_cast<Text*>(GameObjects[3]->GetComponentOfType(ComponentsType::Text));
+			filteredText->SetText("GRAYSCALE + SMOOTH 3x3 + SOBEL", glm::vec4(0, 0.6f, 1, 1), glm::vec3(-250, inWindowSizeY - 25, -0.1f), "arial.ttf", true, true);
 		}
 	}
 
 
 }
 
-void Scene::Update()
+void Scene::Update(float DeltaTime)
 {
 	for (auto & gameObject : GameObjects)
 	{
-		//Transform * tr = (Transform*)(gameObject->GetComponentOfType(ComponentsType::Transform));
-
-		gameObject->Update(0);
+		gameObject->Update(DeltaTime);
 	}
 }
 

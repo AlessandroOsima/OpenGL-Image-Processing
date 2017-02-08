@@ -10,6 +10,7 @@
 #include "GameObjects/Components/Transform.h"
 #include "GameObjects/Objects/TexturedGameObject.h"
 #include <glm/gtc/matrix_transform.hpp>
+#include "GameObjects/Components/Text.h"
 
 
 TexturedGameObject::TexturedGameObject()
@@ -48,6 +49,8 @@ void TexturedGameObject::Start()
 	rend->SetMesh(mesh);
 
 	ComponentLocation transfLoc = AddComponent(std::make_unique<Transform>());
+
+	AddComponent(std::make_unique<Text>());
 }
 
 void TexturedGameObject::Update(float DeltaTime)

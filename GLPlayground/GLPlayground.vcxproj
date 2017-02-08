@@ -46,11 +46,13 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\GameObjects\Components\Text.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Libs\stb\stb_image_write.h" />
     <ClInclude Include="Libs\stb\stb_truetype.h" />
     <ClInclude Include="Source\Logger\Asserts.h" />
+    <ClInclude Include="Source\Renderer\Font.h" />
     <ClInclude Include="Source\Renderer\FontRenderer.h" />
     <ClInclude Include="Source\Renderer\Material.h" />
     <ClInclude Include="Source\Renderer\RenderPass.h" />
@@ -78,6 +80,7 @@
     <ClInclude Include="Source\targetver.h" />
     <ClInclude Include="Source\GameObjects\Objects\TexturedGameObject.h" />
     <ClInclude Include="Source\Managers\TextureManager.h" />
+    <ClInclude Include="Source\GameObjects\Components\Text.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

@@ -70,12 +70,26 @@ int main()
 	scene.Init();
 	
 
+	double StartTime, EndTime;
+	float DeltaTime = 0;
+
 	while (!glfwWindowShouldClose(window))
 	{
+		StartTime = glfwGetTime();
+		
 		glfwPollEvents();
 
-		scene.Update();
-		renderScene.RenderScene();
+		scene.Update(DeltaTime);
+		renderScene.RenderScene(DeltaTime);
+
+		/*std::stringstream stream;
+		stream << DeltaTime << std::ends;
+
+		Logger::GetLogger().LogString(stream.str(), LogType::LOG);*/
+
+		EndTime = glfwGetTime();
+
+		DeltaTime = static_cast<float>(EndTime - StartTime);
 	}
 
 	scene.DeInit();

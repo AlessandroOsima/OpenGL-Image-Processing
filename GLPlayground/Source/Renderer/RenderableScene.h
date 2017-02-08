@@ -29,7 +29,7 @@ public:
 
 	void Initialize();
 
-	void RenderScene();
+	void RenderScene(float DeltaTime);
 
 	void DeInitialize();
 
@@ -61,7 +61,7 @@ public:
 	{
 		std::map<std::size_t, FontRenderer>::iterator it = FontRenderers.find(FontRendererID);
 
-		if (it != FontRenderers.end())
+		if (it == FontRenderers.end())
 		{
 			return nullptr;
 		}
@@ -88,8 +88,6 @@ private:
 	size_t OffscreenFBColorAttachment;
 
 	Material BaseMaterial;
-
-	//std::vector<std::unique_ptr<Mesh>> TextMeshes;
 
 	std::map<size_t, FontRenderer> FontRenderers;
 };

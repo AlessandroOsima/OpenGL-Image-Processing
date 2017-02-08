@@ -2,12 +2,18 @@
 #include "Renderer/Material.h"
 #include "Renderer/Mesh.h"
 #include "Renderer/GLRenderer.h"
+#include "Renderer/Font.h"
 
-struct TextInfo
+struct TextRenderData
 {
-	std::string Text;
-	glm::vec4 Color;
-	glm::vec3 Position;
+	std::unique_ptr<Mesh> TextMesh;
+	float Duration;
+	bool Infinite = false;
+
+	TextRenderData(std::unique_ptr<Mesh> && MeshToReplace, float Duration, bool Infinite);
+	TextRenderData(TextRenderData && RenderData);
+	TextRenderData();
+	TextRenderData & operator=(TextRenderData && RenderDataToReplace);
 };
 
 class FontRenderer
@@ -18,10 +24,11 @@ public:
 	FontRenderer & operator=(FontRenderer && RendererToReplace);
 
 	bool Init(const std::string & FontName, WindowInfo Info);
-	void Render(GLRenderer & Renderer, std::vector<std::unique_ptr<Mesh>> & TextMeshes);
+	void Render(GLRenderer & Renderer, float DeltaTime);
 	void DeInit();
 
 	std::unique_ptr<Mesh> CreateMeshFromText(TextInfo Text);
+	void RenderText(TextInfo Info, float Duration, bool Infinite = false);
 
 private:
 
@@ -36,6 +43,8 @@ private:
 	int BitMapWidth = 1024;
 	int BitMapHeight = 1024;
 	float Scale;
+
+	std::vector<TextRenderData> RenderDatas;
 
 	UniformMatrices UniformMatricesBuffer;
 };
