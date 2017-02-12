@@ -78,7 +78,6 @@ void RenderableScene::RenderScene(float DeltaTime)
 		else
 		{
 
-			//Do base pass
 			RenderPassGroup & group = Passes[mesh.Location];
 			
 			bool found;
@@ -92,12 +91,14 @@ void RenderableScene::RenderScene(float DeltaTime)
 			//Do all the addictive passes
 			for (int i = 0; i < group.RenderPasses.size(); i++)
 			{
-
+				//The viewport is the size of the texture we are rendering
 				glViewport(0, 0, colorTarget.GetTextureInfo().Width, colorTarget.GetTextureInfo().Height);
 
+				//Bind the attachment texture to the framebuffer as a color target
 				OffscreenFramebuffer.BindTextureToFramebuffer(colorTarget, FrameBufferAttachmentType::COLOR);
 				OffscreenFramebuffer.BindFramebuffer(FramebufferBindType::FRAMEBUFFER);
 
+				//Setup the shaders for the current RenderPass
 				Renderer.Clear();
 
 				mesh.Mesh->Bind();
@@ -121,7 +122,7 @@ void RenderableScene::RenderScene(float DeltaTime)
 				constexpr char * MatricesUniformName = "Matrices";
 				program.BindBufferToUniform(UniformMatricesBufferID, MatricesBindingLocation, MatricesUniformName);
 
-
+				//When we render to an offscreen texture the model, view and projection matrices are all identity matrices because there is no need for transformations
 				glNamedBufferSubData(UniformMatricesBufferID, 0, sizeof(glm::mat4), &glm::mat4(1));
 				glNamedBufferSubData(UniformMatricesBufferID, sizeof(glm::mat4), sizeof(glm::mat4), &glm::mat4(1));
 				glNamedBufferSubData(UniformMatricesBufferID, sizeof(glm::mat4) * 2, sizeof(glm::mat4), &glm::mat4(1));
@@ -131,26 +132,20 @@ void RenderableScene::RenderScene(float DeltaTime)
 				group.RenderPasses[i].GetMaterial().UnBind();
 				mesh.Mesh->Unbind();
 
-				glBindTexture(GL_TEXTURE_2D, textureAttachment.GetID());
-				glCheckFunction(glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, colorTarget.GetTextureInfo().Width, colorTarget.GetTextureInfo().Height));
-				glBindTexture(GL_TEXTURE_2D, 0);
-
 				if (group.RenderPasses[i].UsePreviousPassAsAttachment)
 				{
+					//Copy the framebuffer color target to another texture to use as input for the fragment shader in the RenderPass
+					glBindTexture(GL_TEXTURE_2D, textureAttachment.GetID());
+					glCheckFunction(glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, colorTarget.GetTextureInfo().Width, colorTarget.GetTextureInfo().Height));
+					glBindTexture(GL_TEXTURE_2D, 0);
+
 					group.RenderPasses[i].GetMaterial().DiffuseTexture = original;
 					attachmentTexture = group.GetAttachmentTexture();
 				}
 
 				if (group.RenderPasses[i].RenderOnMainFramebuffer)
 				{
-
-					/*OffscreenFramebuffer.UnBindFramebuffer();
-
-					OffscreenFramebuffer.BindFramebuffer(FramebufferBindType::READ);
-
-					glBlitFramebuffer(0, 0, colorTarget.GetTextureInfo().Width, colorTarget.GetTextureInfo().Height, 0, 0, colorTarget.GetTextureInfo().Width, colorTarget.GetTextureInfo().Height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
-					*/
-
+					//Render the mesh in the main framebuffer
 					OffscreenFramebuffer.UnbindFramebufferAttachment(FrameBufferAttachmentType::COLOR);
 					OffscreenFramebuffer.UnBindFramebuffer();
 
@@ -161,7 +156,7 @@ void RenderableScene::RenderScene(float DeltaTime)
 					BaseMaterial.DiffuseTexture = attachmentTexture;
 					BaseMaterial.Bind();
 					
-
+					//Since we are rendering on the main window we need to use the correct matrices
 					glNamedBufferSubData(UniformMatricesBufferID, 0, sizeof(glm::mat4), &CurrentProjection);
 					glNamedBufferSubData(UniformMatricesBufferID, sizeof(glm::mat4), sizeof(glm::mat4), &CurrentView);
 					glNamedBufferSubData(UniformMatricesBufferID, sizeof(glm::mat4) * 2, sizeof(glm::mat4), &mesh.Mesh->GetModel());
@@ -182,6 +177,7 @@ void RenderableScene::RenderScene(float DeltaTime)
 	OffscreenFramebuffer.UnbindFramebufferAttachment(FrameBufferAttachmentType::COLOR);
 	OffscreenFramebuffer.UnBindFramebuffer();
 
+	//Restore the viewport and render all the TextRenderers
 	glViewport(0, 0, info.Width, info.Height);
 
 

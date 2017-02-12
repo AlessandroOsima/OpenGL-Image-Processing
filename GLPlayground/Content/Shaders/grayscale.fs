@@ -1,8 +1,10 @@
 #version 450 core
 
 layout (location = 0) out vec4 color;
+//This allows to sample a specific pixel a texture at its UV coordinates
 layout (binding = 0) uniform sampler2D diffuseSampler;
 
+//Interpolated color and UV coordinates
 in vec4 fragmentColor;
 in vec2 uvCoords;
 
