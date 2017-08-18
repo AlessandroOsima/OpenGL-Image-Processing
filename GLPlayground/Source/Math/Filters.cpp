@@ -14,14 +14,34 @@ glm::mat3 Filters::GenerateSmoothingMatrix()
 	return Weight;
 }
 
-glm::mat3 Filters::GenerateSharpenMatrix(float SharpenFactor)
+glm::mat3 Filters::GenerateSharpenMatrix(bool KeepBackground)
 {
 	glm::mat3  Weight(1.f);
 
 	float factor = -1;
+
+	float SharpenFactor = 8;
+
+	if (KeepBackground)
+	{
+		SharpenFactor = 9;
+	}
+
+
 	Weight[0] = { factor, factor, factor };
 	Weight[1] = { factor, SharpenFactor, factor };
 	Weight[2] = { factor, factor, factor };
+
+	return Weight;
+}
+
+glm::mat3 Filters::GenerateSharpenFactor5()
+{
+	glm::mat3  Weight(1.f);
+
+	Weight[0] = { 0, -1,  0 };
+	Weight[1] = { -1, 5, -1 };
+	Weight[2] = { 0, -1,  0 };
 
 	return Weight;
 }

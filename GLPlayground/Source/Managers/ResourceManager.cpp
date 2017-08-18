@@ -10,8 +10,8 @@ ResourceManager::~ResourceManager()
 {
 }
 
-const std::string ResourceManager::Shaders = "Shaders/";
+const std::string ResourceManager::Shaders = "Content/Shaders/";
 
-const std::string ResourceManager::Textures = "Textures/";
+const std::string ResourceManager::Textures = "Content/Textures/";
 
-const std::string ResourceManager::Fonts = "Fonts/";
+const std::string ResourceManager::Fonts = "Content/Fonts/";

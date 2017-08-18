@@ -40,7 +40,7 @@
     <ClCompile Include="Source\Renderer\ShaderProgram.cpp" />
     <ClCompile Include="Source\Renderer\Texture.cpp" />
     <ClCompile Include="Source\GLPlayground.cpp" />
-    <ClCompile Include="Source\GameObjects\Objects\TexturedGameObject.cpp" />
+    <ClCompile Include="Source\GameObjects\Objects\TexturedObject.cpp" />
     <ClCompile Include="Source\Managers\TextureManager.cpp" />
     <ClCompile Include="Source\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -78,7 +78,7 @@
     <ClInclude Include="Source\Renderer\Uniform.h" />
     <ClInclude Include="Source\stdafx.h" />
     <ClInclude Include="Source\targetver.h" />
-    <ClInclude Include="Source\GameObjects\Objects\TexturedGameObject.h" />
+    <ClInclude Include="Source\GameObjects\Objects\TexturedObject.h" />
     <ClInclude Include="Source\Managers\TextureManager.h" />
     <ClInclude Include="Source\GameObjects\Components\Text.h" />
   </ItemGroup>

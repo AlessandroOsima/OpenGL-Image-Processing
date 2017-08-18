@@ -81,15 +81,16 @@ int main()
 
 		scene.Update(DeltaTime);
 		renderScene.RenderScene(DeltaTime);
-
-		std::stringstream stream;
+	
+		/*std::stringstream stream;
 		stream << DeltaTime << std::ends;
 
-		Logger::GetLogger().LogString(stream.str(), LogType::LOG);
+		Logger::GetLogger().LogString(stream.str(), LogType::LOG);*/
 
 		EndTime = glfwGetTime();
 
 		DeltaTime = static_cast<float>(EndTime - StartTime);
+
 	}
 
 	scene.DeInit();

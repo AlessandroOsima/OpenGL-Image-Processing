@@ -19,7 +19,6 @@ bool ShaderManager::CreateShader(const std::string & ShaderProgramName, const st
 
 	ShaderProgram prg;
 
-	//FIXME : Generating a string for each resource load is TERRIBLE
 	std::string vsStr = ResourceManager::GetShadersForlder();
 
 	if (!prg.CompileShader(vsStr += VertexShaderFilename, ShaderType::Vertex))

@@ -128,7 +128,6 @@ void RenderPassGroup::Init()
 
 	TextureManager::GetTextureManager().CreateTexture(AttachmentTextureName, GL_RGBA8, OffscreenTextureWidth, OffscreenTextureHeight, AttachmentTexture);
 	
-	//TODO : this is terrible
 	static int ID = 0;
 	std::stringstream stream;
 	stream << "PassGroupOffscrenResult" << ID << std::ends;

@@ -1,10 +1,10 @@
 #pragma once
 #include "GameObjects/Object.h"
-class TexturedGameObject :
+class TexturedObject :
 	public Object
 {
 public:
-	TexturedGameObject();
+	TexturedObject();
 
 	void Start() override;
 	void Update(float DeltaTime) override;

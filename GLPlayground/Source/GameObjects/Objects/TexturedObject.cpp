@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "TexturedGameObject.h"
+#include "TexturedObject.h"
 #include "Renderer/RenderableScene.h"
 #include "Managers/ResourceManager.h"
 #include "Managers/TextureManager.h"
@@ -8,17 +8,17 @@
 #include "Managers/ShaderManager.h"
 #include "Logger/Logger.h"
 #include "GameObjects/Components/Transform.h"
-#include "GameObjects/Objects/TexturedGameObject.h"
+#include "GameObjects/Objects/TexturedObject.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include "GameObjects/Components/Text.h"
 
 
-TexturedGameObject::TexturedGameObject()
+TexturedObject::TexturedObject()
 {
 
 }
 
-void TexturedGameObject::Start()
+void TexturedObject::Start()
 {
 
 	Object::Start();
@@ -53,12 +53,12 @@ void TexturedGameObject::Start()
 	AddComponent(std::make_unique<Text>());
 }
 
-void TexturedGameObject::Update(float DeltaTime)
+void TexturedObject::Update(float DeltaTime)
 {
 	Object::Update(DeltaTime);
 }
 
-void TexturedGameObject::End()
+void TexturedObject::End()
 {
 	Object::End();
 }

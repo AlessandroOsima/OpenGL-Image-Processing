@@ -62,11 +62,13 @@ public:
 	void Init();
 	void DeInit();
 
+	//The texture bound to the framebuffer as the color target
 	inline size_t GetOffscreenTexture() const
 	{
 		return OffscreenTexture;
 	}
 
+	//The texture used as an input for the fragment shader
 	inline size_t GetAttachmentTexture() const
 	{
 		return AttachmentTexture;
